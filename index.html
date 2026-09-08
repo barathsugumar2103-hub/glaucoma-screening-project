@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Glaucoma Screening System</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            background: #eef2f7;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 650px;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.12);
+            text-align: center;
+        }
+
+        .icon {
+            font-size: 50px;
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            color: #1d2939;
+        }
+
+        .subtitle {
+            color: #667085;
+            margin-bottom: 30px;
+        }
+
+        .upload-box {
+            border: 2px dashed #98a2b3;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+
+        .upload-box:hover {
+            border-color: #344054;
+            background: #f9fafb;
+        }
+
+        input[type="file"] {
+            margin: 15px;
+        }
+
+        #preview {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 12px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            background: #1d2939;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #344054;
+        }
+
+        .result {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 12px;
+            background: #f2f4f7;
+        }
+
+        .result h2 {
+            margin-bottom: 8px;
+            color: #1d2939;
+        }
+
+        .result p {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .disclaimer {
+            margin-top: 25px;
+            font-size: 12px;
+            color: #667085;
+            line-height: 1.5;
+        }
+
+        .footer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #98a2b3;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="icon">👁️</div>
+
+        <h1>Glaucoma Screening System</h1>
+
+        <p class="subtitle">
+            AI-based retinal fundus image screening prototype
+        </p>
+
+        <form action="/predict" method="POST" enctype="multipart/form-data">
+
+            <div class="upload-box">
+
+                <p>Select a retinal fundus image</p>
+
+                <input
+                    type="file"
+                    name="image"
+                    id="imageInput"
+                    accept="image/*"
+                    required
+                >
+
+                <img id="preview" alt="Fundus image preview">
+
+            </div>
+
+            <button type="submit">
+                🔍 Analyze Image
+            </button>
+
+        </form>
+
+        {% if result %}
+
+        <div class="result">
+
+            <h2>Screening Result</h2>
+
+            <p>{{ result }}</p>
+
+        </div>
+
+        {% endif %}
+
+        <div class="disclaimer">
+
+            ⚠️ This system is a college-project prototype.
+            It is not a medical diagnostic tool.
+            Results should not be used to make medical decisions.
+
+        </div>
+
+        <div class="footer">
+
+            Glaucoma Screening Project • Python + OpenCV + Machine Learning
+
+        </div>
+
+    </div>
+
+    <script>
+
+        const imageInput = document.getElementById("imageInput");
+        const preview = document.getElementById("preview");
+
+        imageInput.addEventListener("change", function () {
+
+            const file = this.files[0];
+
+            if (file) {
+
+                preview.src = URL.createObjectURL(file);
+
+                preview.style.display = "block";
+
+            }
+
+        });
+
+    </script>
+
+</body>
+
+</html>
