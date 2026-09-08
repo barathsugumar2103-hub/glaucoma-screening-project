@@ -163,15 +163,10 @@
 
         </form>
 
-        {% if result %}
-
-        <div class="result">
-
-            <h2>Screening Result</h2>
-
-            <p>{{ result }}</p>
-
-        </div>
+       <div id="resultBox" class="result-box" style="display: none;">
+    <h2>Screening Result</h2>
+    <p id="resultText"></p>
+</div>
 
         {% endif %}
 
