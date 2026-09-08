@@ -34,7 +34,7 @@ async function analyzeImage() {
     try {
 
         const response = await fetch(
-            "YOUR_RENDER_URL/predict",
+           "https://glaucoma-screening-project-die1.onrender.com/predict",
             {
                 method: "POST",
                 body: formData
