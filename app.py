@@ -81,16 +81,125 @@ def predict():
     # Make prediction
     prediction = model.predict([features])[0]
 
+    # --------------------------------
+    # POSSIBLE GLAUCOMA
+    # --------------------------------
+
     if prediction == 1:
 
         result = "Possible Glaucoma"
+
+        risk_level = "High"
+
+        stage = "Stage estimation unavailable"
+
+        risk_factors = [
+            "Family history of glaucoma",
+            "Increased eye pressure",
+            "Older age",
+            "Certain eye conditions",
+            "Some medical conditions or medications"
+        ]
+
+        warning_signs = [
+            "Early glaucoma may have no noticeable symptoms",
+            "Changes in peripheral vision can occur as glaucoma progresses",
+            "Some forms of glaucoma can cause eye pain or blurred vision"
+        ]
+
+        next_steps = [
+            "Consider a comprehensive eye examination",
+            "An eye-care professional can measure eye pressure",
+            "The optic nerve can be examined",
+            "Visual field testing may be performed"
+        ]
+
+        about = (
+            "Glaucoma is a group of eye diseases that can damage "
+            "the optic nerve and may lead to vision loss."
+        )
+
+    # --------------------------------
+    # LIKELY NORMAL
+    # --------------------------------
 
     else:
 
         result = "Likely Normal"
 
+        risk_level = "Lower screening concern"
+
+        stage = "Not applicable"
+
+        risk_factors = [
+            "Family history of glaucoma",
+            "Increased eye pressure",
+            "Older age",
+            "Certain eye conditions"
+        ]
+
+        warning_signs = [
+            "Early glaucoma may have no noticeable symptoms"
+        ]
+
+        next_steps = [
+            "Continue routine eye examinations",
+            "Seek professional evaluation if you have eye-related concerns"
+        ]
+
+        about = (
+            "The prototype did not detect image patterns associated "
+            "with the glaucoma class."
+        )
+
+    # --------------------------------
+    # MODEL SCORE
+    # --------------------------------
+
+    model_score = None
+
+    if hasattr(model, "predict_proba"):
+
+        probabilities = model.predict_proba([features])[0]
+
+        glaucoma_probability = probabilities[1]
+
+        model_score = round(glaucoma_probability * 100, 2)
+
+    # --------------------------------
+    # SEND RESPONSE
+    # --------------------------------
+
     return jsonify({
-        "result": result
+
+        "result": result,
+
+        "model_score": model_score,
+
+        "risk_level": risk_level,
+
+        "stage": stage,
+
+        "risk_factors": risk_factors,
+
+        "warning_signs": warning_signs,
+
+        "next_steps": next_steps,
+
+        "about": about,
+
+        "model_information": {
+            "algorithm": "Support Vector Machine (SVM)",
+            "features": "Histogram of Oriented Gradients (HOG)",
+            "image_size": "128 x 128 pixels"
+        },
+
+        "disclaimer": (
+            "This is a college-project AI screening prototype. "
+            "The result is not a medical diagnosis and should not "
+            "be used to make medical decisions."
+        )
+
     })
 
 
