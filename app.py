@@ -1,59 +1,31 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-
 import cv2
 import joblib
 import numpy as np
-
 from skimage.feature import hog
 
-
-# --------------------------------------------------
-# Flask application
-# --------------------------------------------------
-
 app = Flask(__name__)
-
-# Allow the Vercel frontend to communicate with Flask
 CORS(app)
-
-
-# --------------------------------------------------
-# Load trained AI model
-# --------------------------------------------------
 
 MODEL_FILE = "glaucoma_model.pkl"
 
-try:
-    model = joblib.load(MODEL_FILE)
-    print("AI model loaded successfully.")
-except Exception as e:
-    model = None
-    print("Error loading AI model:", e)
+model = joblib.load(MODEL_FILE)
 
-
-# --------------------------------------------------
-# Feature extraction
-# --------------------------------------------------
 
 def extract_features(image_bytes):
 
-    # Convert uploaded image into NumPy array
     image_array = np.frombuffer(image_bytes, np.uint8)
 
-    # Decode image
     image = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
 
     if image is None:
         return None
 
-    # Resize image
     image = cv2.resize(image, (128, 128))
 
-    # Convert to grayscale
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-    # Extract HOG features
     features = hog(
         gray,
         orientations=9,
@@ -65,10 +37,6 @@ def extract_features(image_bytes):
     return features
 
 
-# --------------------------------------------------
-# Home route
-# --------------------------------------------------
-
 @app.route("/")
 def home():
 
@@ -77,39 +45,26 @@ def home():
     })
 
 
-# --------------------------------------------------
-# Prediction route
-# --------------------------------------------------
-
 @app.route("/predict", methods=["POST"])
 def predict():
 
-    # Check whether an image was uploaded
     if "image" not in request.files:
 
         return jsonify({
             "error": "No image uploaded"
         }), 400
 
-
     file = request.files["image"]
 
-
-    # Check whether a file was selected
     if file.filename == "":
 
         return jsonify({
             "error": "No image selected"
         }), 400
 
-
-    # Read image
     image_bytes = file.read()
 
-
-    # Extract features
     features = extract_features(image_bytes)
-
 
     if features is None:
 
@@ -118,68 +73,47 @@ def predict():
         }), 400
 
 
-    # Check whether model loaded correctly
-    if model is None:
-
-        return jsonify({
-            "error": "AI model could not be loaded"
-        }), 500
-
-
-    # --------------------------------------------------
     # AI prediction
-    # --------------------------------------------------
-
     prediction = model.predict([features])[0]
 
 
-    # --------------------------------------------------
-    # Model score
-    # --------------------------------------------------
+    # -----------------------------------------
+    # MODEL SCORE
+    # -----------------------------------------
 
     model_score = None
 
     try:
 
-        if hasattr(model, "predict_proba"):
+        probabilities = model.predict_proba([features])[0]
 
-            probabilities = model.predict_proba([features])[0]
+        if len(probabilities) > 1:
 
-            # Class 1 = glaucoma
-            if len(probabilities) > 1:
-
-                model_score = round(
-                    float(probabilities[1]) * 100,
-                    2
-                )
+            model_score = round(
+                float(probabilities[1]) * 100,
+                2
+            )
 
     except Exception as e:
 
-        print("Could not calculate model score:", e)
-
-        model_score = None
+        print("Score error:", e)
 
 
-    # --------------------------------------------------
-    # Glaucoma result
-    # --------------------------------------------------
+    # -----------------------------------------
+    # GLAUCOMA RESULT
+    # -----------------------------------------
 
     if prediction == 1:
 
         result = "Possible Glaucoma"
 
-        stage = "Stage estimation unavailable"
+        stage = "Stage estimation unavailable."
 
         risk_factors = [
-
             "Increasing age can be associated with glaucoma risk.",
-
             "Family history of glaucoma may increase risk.",
-
             "High eye pressure is an important clinical risk factor.",
-
             "Some medical conditions can be associated with increased risk."
-
         ]
 
         about = (
@@ -188,32 +122,25 @@ def predict():
         )
 
         next_steps = [
-
             "Consider having a professional eye examination.",
-
             "An eye specialist can perform appropriate glaucoma tests.",
-
             "Do not use this prototype result as a medical diagnosis."
-
         ]
 
 
-    # --------------------------------------------------
-    # Normal result
-    # --------------------------------------------------
+    # -----------------------------------------
+    # NORMAL RESULT
+    # -----------------------------------------
 
     else:
 
         result = "Likely Normal"
 
-        stage = "No glaucoma stage estimated"
+        stage = "No glaucoma stage estimated."
 
         risk_factors = [
-
             "A normal prototype result does not rule out glaucoma.",
-
             "Regular eye examinations can help detect eye problems early."
-
         ]
 
         about = (
@@ -222,19 +149,15 @@ def predict():
         )
 
         next_steps = [
-
             "Continue routine eye examinations.",
-
             "Seek professional evaluation if you have eye-related concerns.",
-
             "Do not use this prototype result as a medical diagnosis."
-
         ]
 
 
-    # --------------------------------------------------
-    # Send result to frontend
-    # --------------------------------------------------
+    # -----------------------------------------
+    # SEND COMPLETE RESPONSE
+    # -----------------------------------------
 
     return jsonify({
 
@@ -248,19 +171,10 @@ def predict():
 
         "about": about,
 
-        "next_steps": next_steps,
-
-        "disclaimer": (
-            "This is a college-project screening prototype "
-            "and not a medical diagnostic tool."
-        )
+        "next_steps": next_steps
 
     })
 
-
-# --------------------------------------------------
-# Run application
-# --------------------------------------------------
 
 if __name__ == "__main__":
 
