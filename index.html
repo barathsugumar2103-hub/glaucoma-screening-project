@@ -4,597 +4,812 @@
 <head>
 
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Glaucoma Detection System</title>
 
+
     <style>
 
+        /* ==========================================
+           BASIC RESET
+        ========================================== */
+
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
         }
 
-        :root {
-            --bg: #050816;
-            --panel: rgba(13, 20, 43, 0.78);
-            --cyan: #00f5ff;
-            --purple: #9b5cff;
-            --text: #f5f7ff;
-            --muted: #929bb7;
-            --border: rgba(0, 245, 255, 0.22);
-        }
+
+        /* ==========================================
+           BODY
+        ========================================== */
 
         body {
-            font-family: Arial, sans-serif;
+
+            font-family: Arial, Helvetica, sans-serif;
+
             min-height: 100vh;
-            color: var(--text);
+
             background:
-                radial-gradient(circle at 10% 10%, rgba(0, 245, 255, 0.12), transparent 30%),
-                radial-gradient(circle at 90% 20%, rgba(155, 92, 255, 0.15), transparent 30%),
-                radial-gradient(circle at 50% 100%, rgba(0, 245, 255, 0.07), transparent 35%),
-                var(--bg);
-            padding: 25px;
+                radial-gradient(circle at top left, #111a3d, transparent 35%),
+                radial-gradient(circle at bottom right, #241044, transparent 35%),
+                #050816;
+
+            color: white;
+
+            padding: 20px;
+
         }
 
-        body::before {
-            content: "";
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            background-image:
-                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
-            background-size: 50px 50px;
-        }
 
-        .page {
-            width: 100%;
-            max-width: 1100px;
-            margin: auto;
-            position: relative;
-            z-index: 1;
-        }
-
-        /* NAVBAR */
+        /* ==========================================
+           NAVBAR
+        ========================================== */
 
         .navbar {
+
+            width: 100%;
+
+            max-width: 1200px;
+
+            margin: auto;
+
             display: flex;
+
             justify-content: space-between;
+
             align-items: center;
-            padding: 10px 5px 25px;
-            border-bottom: 1px solid rgba(255,255,255,0.08);
+
+            padding: 18px 25px;
+
+            border: 1px solid rgba(0, 245, 255, 0.3);
+
+            border-radius: 15px;
+
+            background: rgba(5, 8, 22, 0.85);
+
+            box-shadow:
+                0 0 20px rgba(0, 245, 255, 0.12);
+
         }
+
 
         .brand {
+
             display: flex;
+
             align-items: center;
-            gap: 13px;
+
+            gap: 12px;
+
+            font-size: 20px;
+
+            font-weight: bold;
+
+            color: #00f5ff;
+
+            text-shadow:
+                0 0 10px #00f5ff;
+
         }
+
 
         .brand-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 15px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 25px;
-            background: rgba(0, 245, 255, 0.08);
-            border: 1px solid rgba(0, 245, 255, 0.35);
-            box-shadow:
-                0 0 15px rgba(0, 245, 255, 0.2),
-                inset 0 0 15px rgba(0, 245, 255, 0.06);
+
+            font-size: 28px;
+
         }
 
-        .brand h2 {
-            font-size: 17px;
-            letter-spacing: 0.5px;
-        }
 
-        .brand p {
-            color: var(--muted);
-            font-size: 11px;
-            margin-top: 4px;
-        }
+        .system-status {
 
-        .status {
-            color: var(--cyan);
-            font-size: 11px;
+            color: #00ff88;
+
+            font-size: 13px;
+
             font-weight: bold;
-            padding: 8px 13px;
-            border-radius: 30px;
-            border: 1px solid rgba(0, 245, 255, 0.3);
-            background: rgba(0, 245, 255, 0.06);
-            box-shadow: 0 0 15px rgba(0, 245, 255, 0.08);
+
+            text-shadow:
+                0 0 8px #00ff88;
+
         }
 
-        /* HERO */
+
+        /* ==========================================
+           MAIN CONTAINER
+        ========================================== */
+
+        .container {
+
+            width: 100%;
+
+            max-width: 1200px;
+
+            margin: 40px auto;
+
+        }
+
+
+        /* ==========================================
+           HERO
+        ========================================== */
 
         .hero {
-            padding: 55px 0 35px;
-            max-width: 760px;
+
+            text-align: center;
+
+            margin-bottom: 40px;
+
         }
 
-        .eyebrow {
-            color: var(--cyan);
-            font-size: 11px;
-            font-weight: bold;
-            letter-spacing: 3px;
-            margin-bottom: 18px;
-            text-shadow: 0 0 12px rgba(0,245,255,0.6);
-        }
 
         .hero h1 {
-            font-size: clamp(38px, 6vw, 65px);
-            line-height: 1.05;
-            letter-spacing: -2px;
-            margin-bottom: 20px;
+
+            font-size: 48px;
+
+            margin-bottom: 15px;
+
+            color: white;
+
+            text-shadow:
+                0 0 10px #00f5ff,
+                0 0 25px rgba(0, 245, 255, 0.5);
+
         }
+
 
         .hero h1 span {
-            background: linear-gradient(
-                90deg,
-                var(--cyan),
-                #5ee7ff,
-                var(--purple)
-            );
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            text-shadow: none;
+
+            color: #00f5ff;
+
         }
+
 
         .hero p {
-            color: var(--muted);
-            line-height: 1.8;
-            font-size: 14px;
-            max-width: 650px;
+
+            color: #aeb8d4;
+
+            font-size: 17px;
+
         }
 
-        /* DASHBOARD */
+
+        /* ==========================================
+           DASHBOARD
+        ========================================== */
 
         .dashboard {
+
             display: grid;
+
             grid-template-columns: 1fr 1fr;
-            gap: 22px;
-            align-items: start;
+
+            gap: 25px;
+
         }
+
+
+        /* ==========================================
+           CARDS
+        ========================================== */
 
         .card {
-            background: var(--panel);
-            backdrop-filter: blur(18px);
-            -webkit-backdrop-filter: blur(18px);
-            border: 1px solid var(--border);
-            border-radius: 24px;
-            padding: 26px;
+
+            background:
+                rgba(8, 13, 35, 0.92);
+
+            border: 1px solid rgba(0, 245, 255, 0.35);
+
+            border-radius: 20px;
+
+            padding: 30px;
+
             box-shadow:
-                0 20px 60px rgba(0,0,0,0.35),
-                inset 0 0 25px rgba(255,255,255,0.015);
+                0 0 25px rgba(0, 245, 255, 0.08);
+
         }
 
-        .card:hover {
-            border-color: rgba(0,245,255,0.35);
-            box-shadow:
-                0 20px 60px rgba(0,0,0,0.35),
-                0 0 25px rgba(0,245,255,0.06);
+
+        .card h2 {
+
+            color: #00f5ff;
+
+            margin-bottom: 10px;
+
+            text-shadow:
+                0 0 8px rgba(0, 245, 255, 0.7);
+
         }
 
-        .card-heading {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 22px;
+
+        .card-subtitle {
+
+            color: #8993b5;
+
+            margin-bottom: 25px;
+
+            font-size: 14px;
+
         }
 
-        .card-icon {
-            width: 43px;
-            height: 43px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 13px;
-            color: var(--cyan);
-            font-size: 21px;
-            border: 1px solid rgba(0,245,255,0.25);
-            background: rgba(0,245,255,0.06);
-            box-shadow: 0 0 18px rgba(0,245,255,0.08);
-        }
 
-        .card-heading h2 {
-            font-size: 17px;
-        }
-
-        .card-heading p {
-            color: var(--muted);
-            font-size: 11px;
-            margin-top: 5px;
-        }
-
-        /* UPLOAD */
+        /* ==========================================
+           UPLOAD AREA
+        ========================================== */
 
         .upload-box {
-            min-height: 250px;
-            border: 1.5px dashed rgba(0,245,255,0.28);
+
+            border: 2px dashed rgba(0, 245, 255, 0.5);
+
             border-radius: 18px;
-            background:
-                radial-gradient(
-                    circle at center,
-                    rgba(0,245,255,0.055),
-                    transparent 65%
-                );
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 25px;
+
+            padding: 40px 20px;
+
             text-align: center;
+
+            cursor: pointer;
+
             transition: 0.3s;
+
         }
+
 
         .upload-box:hover {
-            border-color: var(--cyan);
+
+            border-color: #00f5ff;
+
             box-shadow:
-                inset 0 0 25px rgba(0,245,255,0.05),
-                0 0 20px rgba(0,245,255,0.08);
+                0 0 25px rgba(0, 245, 255, 0.2);
+
+            background:
+                rgba(0, 245, 255, 0.03);
+
         }
 
-        .upload-symbol {
-            width: 65px;
-            height: 65px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            font-size: 30px;
-            margin-bottom: 17px;
-            border: 1px solid rgba(0,245,255,0.3);
-            background: rgba(0,245,255,0.07);
-            box-shadow:
-                0 0 20px rgba(0,245,255,0.13),
-                inset 0 0 20px rgba(0,245,255,0.05);
-            animation: pulse 3s infinite;
+
+        .upload-icon {
+
+            font-size: 55px;
+
+            margin-bottom: 15px;
+
+            animation: glow 2s infinite alternate;
+
         }
 
-        @keyframes pulse {
-            0%, 100% {
-                box-shadow:
-                    0 0 18px rgba(0,245,255,0.1),
-                    inset 0 0 15px rgba(0,245,255,0.05);
+
+        @keyframes glow {
+
+            from {
+
+                text-shadow:
+                    0 0 5px #00f5ff;
+
             }
 
-            50% {
-                box-shadow:
-                    0 0 30px rgba(0,245,255,0.3),
-                    inset 0 0 20px rgba(0,245,255,0.1);
+            to {
+
+                text-shadow:
+                    0 0 25px #00f5ff,
+                    0 0 40px #9b5cff;
+
             }
+
         }
 
-        .upload-box h3 {
-            font-size: 16px;
-            margin-bottom: 8px;
-        }
 
         .upload-box p {
-            color: var(--muted);
-            font-size: 12px;
-            line-height: 1.6;
+
+            color: #b7c0da;
+
+            margin-bottom: 15px;
+
         }
+
 
         input[type="file"] {
-            margin-top: 20px;
-            max-width: 100%;
-            color: var(--muted);
-            font-size: 11px;
+
+            width: 100%;
+
+            padding: 10px;
+
+            color: #b7c0da;
+
         }
 
-        input[type="file"]::file-selector-button {
-            border: 1px solid rgba(0,245,255,0.3);
-            border-radius: 9px;
-            background: rgba(0,245,255,0.08);
-            color: var(--cyan);
-            padding: 10px 13px;
-            margin-right: 8px;
-            cursor: pointer;
-            font-weight: bold;
-        }
 
-        /* IMAGE */
+        /* ==========================================
+           IMAGE PREVIEW
+        ========================================== */
 
         #preview {
+
             display: none;
-            max-width: 100%;
-            max-height: 260px;
+
+            width: 100%;
+
+            max-height: 300px;
+
             object-fit: contain;
+
             margin-top: 20px;
-            border-radius: 13px;
-            border: 1px solid rgba(0,245,255,0.3);
-            box-shadow: 0 0 25px rgba(0,245,255,0.1);
+
+            border-radius: 12px;
+
+            border: 1px solid rgba(0, 245, 255, 0.4);
+
+            box-shadow:
+                0 0 20px rgba(0, 245, 255, 0.15);
+
         }
 
-        /* BUTTON */
+
+        /* ==========================================
+           ANALYZE BUTTON
+        ========================================== */
 
         #analyzeButton {
+
             width: 100%;
+
             margin-top: 20px;
-            padding: 15px;
-            border: 1px solid rgba(0,245,255,0.5);
+
+            padding: 16px;
+
+            border: none;
+
             border-radius: 12px;
-            background: linear-gradient(
-                90deg,
-                #00b8c4,
-                #00f5ff,
-                #9b5cff
-            );
-            color: #041017;
-            font-size: 14px;
-            font-weight: 800;
-            cursor: pointer;
-            box-shadow:
-                0 0 20px rgba(0,245,255,0.2);
-            transition: 0.25s;
-        }
 
-        #analyzeButton:hover {
-            transform: translateY(-2px);
-            box-shadow:
-                0 0 30px rgba(0,245,255,0.35);
-        }
-
-        #analyzeButton:disabled {
-            opacity: 0.55;
-            cursor: wait;
-            transform: none;
-        }
-
-        /* RESULT */
-
-        .result-box {
-            margin-top: 5px;
-            padding: 22px;
-            border-radius: 17px;
             background:
                 linear-gradient(
-                    145deg,
-                    rgba(0,245,255,0.05),
-                    rgba(155,92,255,0.05)
+                    90deg,
+                    #00bcd4,
+                    #9b5cff
                 );
-            border: 1px solid rgba(0,245,255,0.16);
+
+            color: white;
+
+            font-size: 16px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 0 15px rgba(0, 245, 255, 0.3);
+
+            transition: 0.3s;
+
         }
 
-        .result-label {
-            color: var(--cyan);
-            font-size: 10px;
-            letter-spacing: 2px;
-            font-weight: bold;
-            margin-bottom: 10px;
+
+        #analyzeButton:hover {
+
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 0 25px rgba(0, 245, 255, 0.6);
+
         }
+
+
+        #analyzeButton:disabled {
+
+            opacity: 0.6;
+
+            cursor: not-allowed;
+
+            transform: none;
+
+        }
+
+
+        /* ==========================================
+           EMPTY STATE
+        ========================================== */
+
+        .empty-state {
+
+            text-align: center;
+
+            padding: 60px 20px;
+
+            color: #66708f;
+
+        }
+
+
+        .empty-state-icon {
+
+            font-size: 50px;
+
+            margin-bottom: 15px;
+
+        }
+
+
+        /* ==========================================
+           RESULT BOX
+        ========================================== */
+
+        #resultBox {
+
+            display: none;
+
+        }
+
+
+        .result-title {
+
+            color: #9b5cff;
+
+            margin-bottom: 20px;
+
+            font-size: 14px;
+
+            letter-spacing: 2px;
+
+            text-transform: uppercase;
+
+        }
+
 
         #resultText {
-            font-size: 22px;
+
+            font-size: 30px;
+
             font-weight: bold;
-            line-height: 1.4;
+
+            color: #00f5ff;
+
+            margin-bottom: 25px;
+
+            text-shadow:
+                0 0 12px rgba(0, 245, 255, 0.7);
+
         }
 
-        .result-box p {
-            color: var(--muted);
-            font-size: 13px;
-            line-height: 1.7;
-        }
 
-        .empty-text {
-            font-size: 16px !important;
-        }
-
-        /* REPORT */
+        /* ==========================================
+           REPORT SECTIONS
+        ========================================== */
 
         .report-section {
-            margin-top: 22px;
-            padding-top: 20px;
-            border-top: 1px solid rgba(255,255,255,0.07);
+
+            margin-top: 20px;
+
+            padding: 20px;
+
+            border-radius: 14px;
+
+            background:
+                rgba(255, 255, 255, 0.025);
+
+            border: 1px solid rgba(155, 92, 255, 0.25);
+
         }
+
 
         .report-section h3 {
-            font-size: 13px;
-            margin-bottom: 11px;
-            color: var(--text);
+
+            color: #9b5cff;
+
+            font-size: 15px;
+
+            margin-bottom: 12px;
+
+            text-transform: uppercase;
+
+            letter-spacing: 1px;
+
         }
 
-        .report-section ul {
-            padding-left: 18px;
+
+        .report-section p {
+
+            color: #c2c9dd;
+
+            line-height: 1.6;
+
+            font-size: 14px;
+
         }
 
-        .report-section li {
-            color: var(--muted);
-            font-size: 12px;
-            line-height: 1.7;
-            margin-bottom: 5px;
+
+        /* ==========================================
+           MODEL SCORE
+        ========================================== */
+
+        .score {
+
+            font-size: 32px !important;
+
+            font-weight: bold;
+
+            color: #00f5ff !important;
+
+            text-shadow:
+                0 0 10px rgba(0, 245, 255, 0.6);
+
         }
 
-        .score-card {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px;
-            border-radius: 12px;
-            border: 1px solid rgba(0,245,255,0.15);
-            background: rgba(0,245,255,0.035);
-        }
-
-        .score-card span {
-            color: var(--muted);
-            font-size: 11px;
-        }
-
-        .score-card strong {
-            color: var(--cyan);
-            font-size: 21px;
-            text-shadow: 0 0 12px rgba(0,245,255,0.4);
-        }
 
         .score-note {
-            color: #737f99 !important;
-            font-size: 10px !important;
-            margin-top: 9px;
+
+            margin-top: 8px;
+
+            font-size: 12px !important;
+
+            color: #727c9a !important;
+
         }
 
-        /* DISCLAIMER */
+
+        /* ==========================================
+           LISTS
+        ========================================== */
+
+        .report-section ul {
+
+            list-style: none;
+
+            padding: 0;
+
+        }
+
+
+        .report-section li {
+
+            color: #c2c9dd;
+
+            padding: 9px 0 9px 25px;
+
+            position: relative;
+
+            line-height: 1.5;
+
+            font-size: 14px;
+
+        }
+
+
+        .report-section li::before {
+
+            content: "◆";
+
+            position: absolute;
+
+            left: 0;
+
+            color: #00f5ff;
+
+            text-shadow:
+                0 0 8px #00f5ff;
+
+        }
+
+
+        /* ==========================================
+           DISCLAIMER
+        ========================================== */
 
         .disclaimer {
-            margin-top: 22px;
+
+            margin-top: 30px;
+
             padding: 15px;
+
             border-radius: 12px;
-            border: 1px solid rgba(255,193,7,0.22);
-            background: rgba(255,193,7,0.04);
-            color: #c8b77c;
-            font-size: 10px;
-            line-height: 1.7;
+
+            border: 1px solid rgba(255, 193, 7, 0.3);
+
+            background:
+                rgba(255, 193, 7, 0.04);
+
+            color: #9fa8bf;
+
+            font-size: 12px;
+
+            line-height: 1.6;
+
+            text-align: center;
+
         }
 
-        /* FOOTER */
+
+        /* ==========================================
+           FOOTER
+        ========================================== */
 
         .footer {
+
             text-align: center;
-            color: #58657e;
-            font-size: 10px;
-            padding: 30px 0 10px;
+
+            margin-top: 25px;
+
+            color: #56617e;
+
+            font-size: 12px;
+
         }
 
-        /* MOBILE */
 
-        @media (max-width: 760px) {
+        /* ==========================================
+           RESPONSIVE DESIGN
+        ========================================== */
 
-            body {
-                padding: 15px;
-            }
-
-            .navbar {
-                align-items: flex-start;
-            }
-
-            .status {
-                font-size: 9px;
-            }
+        @media (max-width: 850px) {
 
             .dashboard {
+
                 grid-template-columns: 1fr;
+
             }
 
-            .hero {
-                padding: 40px 0 30px;
-            }
 
             .hero h1 {
-                font-size: 42px;
+
+                font-size: 36px;
+
             }
 
-            .card {
-                padding: 20px;
+        }
+
+
+        @media (max-width: 550px) {
+
+            body {
+
+                padding: 10px;
+
             }
+
+
+            .navbar {
+
+                padding: 15px;
+
+            }
+
+
+            .brand {
+
+                font-size: 15px;
+
+            }
+
+
+            .system-status {
+
+                font-size: 10px;
+
+            }
+
+
+            .container {
+
+                margin-top: 25px;
+
+            }
+
+
+            .hero h1 {
+
+                font-size: 30px;
+
+            }
+
+
+            .hero p {
+
+                font-size: 14px;
+
+            }
+
+
+            .card {
+
+                padding: 20px;
+
+            }
+
+
+            #resultText {
+
+                font-size: 24px;
+
+            }
+
         }
 
     </style>
 
 </head>
 
+
 <body>
 
-<div class="page">
 
-    <!-- NAVBAR -->
+    <!-- ==========================================
+         NAVBAR
+    =========================================== -->
 
     <nav class="navbar">
 
         <div class="brand">
 
-            <div class="brand-icon">
-                👁️
-            </div>
+            <span class="brand-icon">👁️</span>
 
-            <div>
-                <h2>Glaucoma Detection System</h2>
-
-                <p>
-                    AI-based retinal image analysis
-                </p>
-            </div>
+            <span>Glaucoma Detection System</span>
 
         </div>
 
-        <div class="status">
+
+        <div class="system-status">
+
             ● SYSTEM ONLINE
+
         </div>
 
     </nav>
 
 
-    <!-- HERO -->
 
-    <header class="hero">
+    <!-- ==========================================
+         MAIN
+    =========================================== -->
 
-        <div class="eyebrow">
-            AI-ASSISTED EYE SCREENING
-        </div>
-
-        <h1>
-            Glaucoma<br>
-            <span>Detection System</span>
-        </h1>
-
-        <p>
-            Upload a retinal fundus image and analyze it
-            using our machine-learning screening prototype.
-        </p>
-
-    </header>
+    <main class="container">
 
 
-    <!-- DASHBOARD -->
+        <!-- HERO -->
 
-    <main class="dashboard">
+        <section class="hero">
 
+            <h1>
+                Glaucoma <span>Detection System</span>
+            </h1>
 
-        <!-- IMAGE ANALYSIS -->
+            <p>
+                AI-based retinal fundus image screening prototype
+            </p>
 
-        <section class="card">
-
-            <div class="card-heading">
-
-                <div class="card-icon">
-                    ◉
-                </div>
-
-                <div>
-
-                    <h2>
-                        Image Analysis
-                    </h2>
-
-                    <p>
-                        Upload a retinal fundus image
-                    </p>
-
-                </div>
-
-            </div>
+        </section>
 
 
-            <form>
+
+        <!-- ======================================
+             DASHBOARD
+        ======================================= -->
+
+        <div class="dashboard">
+
+
+            <!-- ==================================
+                 LEFT CARD - UPLOAD
+            =================================== -->
+
+            <div class="card">
+
+                <h2>Upload Image</h2>
+
+                <p class="card-subtitle">
+                    Select a retinal fundus image for screening
+                </p>
+
 
                 <div class="upload-box">
 
-                    <div class="upload-symbol">
+                    <div class="upload-icon">
                         👁️
                     </div>
 
-                    <h3>
-                        Select retinal image
-                    </h3>
 
                     <p>
-                        Choose a clear fundus image
-                        from your device.
+                        Select a retinal fundus image
                     </p>
 
 
@@ -603,7 +818,6 @@
                         name="image"
                         id="imageInput"
                         accept="image/*"
-                        required
                     >
 
 
@@ -620,175 +834,213 @@
                     id="analyzeButton"
                     onclick="analyzeImage()"
                 >
+
                     ✦ ANALYZE IMAGE
+
                 </button>
-
-            </form>
-
-
-            <div class="disclaimer">
-
-                ⚠️ This is a college-project prototype,
-                not a medical diagnostic tool. Results
-                should not be used to make medical decisions.
 
             </div>
 
-        </section>
 
 
-        <!-- SCREENING REPORT -->
+            <!-- ==================================
+                 RIGHT CARD - RESULTS
+            =================================== -->
 
-        <section class="card">
+            <div class="card">
 
-            <div class="card-heading">
+                <h2>AI Screening Report</h2>
 
-                <div class="card-icon">
-                    ✧
-                </div>
+                <p class="card-subtitle">
+                    Analysis generated by the project model
+                </p>
 
-                <div>
 
-                    <h2>
-                        Screening Report
-                    </h2>
+                <!-- EMPTY STATE -->
+
+                <div
+                    id="emptyState"
+                    class="empty-state"
+                >
+
+                    <div class="empty-state-icon">
+                        🔬
+                    </div>
 
                     <p>
-                        AI model output
+                        Upload an image and click
+                        <b>Analyze Image</b>
+                        to generate a screening report.
                     </p>
 
                 </div>
 
-            </div>
 
 
-            <div
-                id="resultBox"
-                class="result-box"
-                style="display: none;"
-            >
+                <!-- RESULT BOX -->
 
-                <div class="result-label">
-                    SCREENING RESULT
-                </div>
-
-                <p id="resultText">
-                </p>
+                <div id="resultBox">
 
 
-                <div class="report-section">
+                    <!-- RESULT -->
 
-                    <h3>
-                        Model estimate
-                    </h3>
+                    <div class="report-section">
 
-                    <div class="score-card">
+                        <div class="result-title">
+                            Screening Result
+                        </div>
 
-                        <span>
-                            Glaucoma-class score
-                        </span>
-
-                        <strong id="modelScore">
-                            —
-                        </strong>
+                        <p id="resultText">
+                            Waiting for analysis...
+                        </p>
 
                     </div>
 
-                    <p class="score-note">
-                        Prototype model estimate only;
-                        not a medical probability.
-                    </p>
-
-                </div>
 
 
-                <div class="report-section">
+                    <!-- MODEL SCORE -->
 
-                    <h3>
-                        Stage estimate
-                    </h3>
+                    <div class="report-section">
 
-                    <p id="stageText">
-                        Stage estimation unavailable.
-                    </p>
+                        <h3>
+                            Model Estimate
+                        </h3>
 
-                </div>
+                        <p
+                            id="modelScore"
+                            class="score"
+                        >
+                            —
+                        </p>
 
+                        <p class="score-note">
+                            Prototype model estimate only.
+                            This is not a clinical probability.
+                        </p>
 
-                <div class="report-section">
-
-                    <h3>
-                        Educational risk factors
-                    </h3>
-
-                    <ul id="riskFactors">
-                    </ul>
-
-                </div>
+                    </div>
 
 
-                <div class="report-section">
 
-                    <h3>
-                        About this result
-                    </h3>
+                    <!-- STAGE -->
 
-                    <p id="aboutText">
-                    </p>
+                    <div class="report-section">
 
-                </div>
+                        <h3>
+                            Stage Estimate
+                        </h3>
+
+                        <p id="stageText">
+                            Waiting for analysis...
+                        </p>
+
+                    </div>
 
 
-                <div class="report-section">
 
-                    <h3>
-                        Suggested next steps
-                    </h3>
+                    <!-- RISK FACTORS -->
 
-                    <ul id="nextSteps">
-                    </ul>
+                    <div class="report-section">
+
+                        <h3>
+                            Educational Risk Factors
+                        </h3>
+
+                        <ul id="riskFactors">
+
+                            <li>
+                                Waiting for analysis...
+                            </li>
+
+                        </ul>
+
+                    </div>
+
+
+
+                    <!-- ABOUT -->
+
+                    <div class="report-section">
+
+                        <h3>
+                            About This Result
+                        </h3>
+
+                        <p id="aboutText">
+                            Waiting for analysis...
+                        </p>
+
+                    </div>
+
+
+
+                    <!-- NEXT STEPS -->
+
+                    <div class="report-section">
+
+                        <h3>
+                            Suggested Next Steps
+                        </h3>
+
+                        <ul id="nextSteps">
+
+                            <li>
+                                Waiting for analysis...
+                            </li>
+
+                        </ul>
+
+                    </div>
+
 
                 </div>
 
             </div>
 
+        </div>
 
-            <!-- EMPTY STATE -->
 
-            <div
-                id="emptyState"
-                class="result-box"
-            >
 
-                <div class="result-label">
-                    READY FOR ANALYSIS
-                </div>
+        <!-- ======================================
+             DISCLAIMER
+        ======================================= -->
 
-                <p class="empty-text">
-                    Your screening report will
-                    appear here after you analyze
-                    an image.
-                </p>
+        <div class="disclaimer">
 
-            </div>
+            ⚠️ <b>Important:</b>
+            This is a college-project AI screening prototype.
+            It is not a medical diagnostic tool.
+            Results should not be used to make medical decisions.
 
-        </section>
+        </div>
+
+
+
+        <!-- ======================================
+             FOOTER
+        ======================================= -->
+
+        <div class="footer">
+
+            Glaucoma Detection System
+            • Python
+            • OpenCV
+            • Machine Learning
+            • Flask
+
+        </div>
+
 
     </main>
 
 
-    <footer class="footer">
 
-        Glaucoma Detection System
-        · Student Project
-        · Python + OpenCV + Machine Learning
+    <!-- ==========================================
+         JAVASCRIPT
+    =========================================== -->
 
-    </footer>
+    <script src="script.js"></script>
 
-</div>
-
-
-<script src="script.js"></script>
 
 </body>
 
