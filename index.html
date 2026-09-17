@@ -5,79 +5,77 @@
 
     <meta charset="UTF-8">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>Glaucoma Detection System</title>
 
 
     <style>
 
-        /* ==========================================
-           BASIC RESET
-        ========================================== */
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
         }
 
-
-        /* ==========================================
-           BODY
-        ========================================== */
 
         body {
 
-            font-family: Arial, Helvetica, sans-serif;
-
-            min-height: 100vh;
-
             background:
-                radial-gradient(circle at top left, #111a3d, transparent 35%),
-                radial-gradient(circle at bottom right, #241044, transparent 35%),
-                #050816;
+                radial-gradient(
+                    circle at top left,
+                    #111a3a,
+                    #050816 45%,
+                    #02030a
+                );
 
             color: white;
 
-            padding: 20px;
+            min-height: 100vh;
 
+            overflow-x: hidden;
         }
 
 
-        /* ==========================================
+        /* ------------------------------
            NAVBAR
-        ========================================== */
+        ------------------------------ */
 
-        .navbar {
+        nav {
 
-            width: 100%;
-
-            max-width: 1200px;
-
-            margin: auto;
+            height: 70px;
 
             display: flex;
 
-            justify-content: space-between;
-
             align-items: center;
 
-            padding: 18px 25px;
+            justify-content: space-between;
 
-            border: 1px solid rgba(0, 245, 255, 0.3);
+            padding: 0 7%;
 
-            border-radius: 15px;
+            border-bottom: 1px solid rgba(
+                0,
+                245,
+                255,
+                0.15
+            );
 
-            background: rgba(5, 8, 22, 0.85);
+            background: rgba(
+                5,
+                8,
+                22,
+                0.8
+            );
 
-            box-shadow:
-                0 0 20px rgba(0, 245, 255, 0.12);
-
+            backdrop-filter: blur(10px);
         }
 
 
-        .brand {
+        .logo {
 
             display: flex;
 
@@ -85,7 +83,7 @@
 
             gap: 12px;
 
-            font-size: 20px;
+            font-size: 21px;
 
             font-weight: bold;
 
@@ -93,56 +91,49 @@
 
             text-shadow:
                 0 0 10px #00f5ff;
-
         }
 
 
-        .brand-icon {
+        .eye-icon {
 
             font-size: 28px;
-
         }
 
 
-        .system-status {
+        .status {
 
-            color: #00ff88;
+            color: #00ff9d;
 
             font-size: 13px;
 
             font-weight: bold;
 
             text-shadow:
-                0 0 8px #00ff88;
-
+                0 0 8px #00ff9d;
         }
 
 
-        /* ==========================================
-           MAIN CONTAINER
-        ========================================== */
+        /* ------------------------------
+           MAIN
+        ------------------------------ */
 
         .container {
 
-            width: 100%;
+            width: 90%;
 
             max-width: 1200px;
 
-            margin: 40px auto;
+            margin: auto;
 
+            padding: 70px 0;
         }
 
-
-        /* ==========================================
-           HERO
-        ========================================== */
 
         .hero {
 
             text-align: center;
 
-            margin-bottom: 40px;
-
+            margin-bottom: 50px;
         }
 
 
@@ -156,60 +147,69 @@
 
             text-shadow:
                 0 0 10px #00f5ff,
-                0 0 25px rgba(0, 245, 255, 0.5);
-
-        }
-
-
-        .hero h1 span {
-
-            color: #00f5ff;
-
+                0 0 25px rgba(
+                    0,
+                    245,
+                    255,
+                    0.4
+                );
         }
 
 
         .hero p {
 
-            color: #aeb8d4;
+            color: #9ca8c7;
 
             font-size: 17px;
 
+            line-height: 1.6;
         }
 
 
-        /* ==========================================
+        /* ------------------------------
            DASHBOARD
-        ========================================== */
+        ------------------------------ */
 
         .dashboard {
 
             display: grid;
 
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns:
+                1fr 1fr;
 
-            gap: 25px;
-
+            gap: 30px;
         }
 
 
-        /* ==========================================
-           CARDS
-        ========================================== */
-
         .card {
 
-            background:
-                rgba(8, 13, 35, 0.92);
+            background: rgba(
+                9,
+                14,
+                35,
+                0.85
+            );
 
-            border: 1px solid rgba(0, 245, 255, 0.35);
+            border: 1px solid rgba(
+                0,
+                245,
+                255,
+                0.25
+            );
 
             border-radius: 20px;
 
             padding: 30px;
 
             box-shadow:
-                0 0 25px rgba(0, 245, 255, 0.08);
+                0 0 25px rgba(
+                    0,
+                    245,
+                    255,
+                    0.08
+                );
 
+            backdrop-filter: blur(10px);
         }
 
 
@@ -217,139 +217,147 @@
 
             color: #00f5ff;
 
-            margin-bottom: 10px;
+            margin-bottom: 20px;
 
             text-shadow:
-                0 0 8px rgba(0, 245, 255, 0.7);
-
+                0 0 8px rgba(
+                    0,
+                    245,
+                    255,
+                    0.5
+                );
         }
 
 
-        .card-subtitle {
-
-            color: #8993b5;
-
-            margin-bottom: 25px;
-
-            font-size: 14px;
-
-        }
-
-
-        /* ==========================================
+        /* ------------------------------
            UPLOAD AREA
-        ========================================== */
+        ------------------------------ */
 
-        .upload-box {
+        .upload-area {
 
-            border: 2px dashed rgba(0, 245, 255, 0.5);
+            border: 2px dashed rgba(
+                0,
+                245,
+                255,
+                0.4
+            );
 
-            border-radius: 18px;
+            border-radius: 15px;
 
-            padding: 40px 20px;
+            min-height: 260px;
 
-            text-align: center;
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            flex-direction: column;
 
             cursor: pointer;
 
             transition: 0.3s;
 
+            padding: 20px;
+
+            text-align: center;
         }
 
 
-        .upload-box:hover {
+        .upload-area:hover {
 
             border-color: #00f5ff;
 
             box-shadow:
-                0 0 25px rgba(0, 245, 255, 0.2);
-
-            background:
-                rgba(0, 245, 255, 0.03);
-
+                0 0 25px rgba(
+                    0,
+                    245,
+                    255,
+                    0.2
+                );
         }
 
 
         .upload-icon {
 
-            font-size: 55px;
+            font-size: 60px;
 
             margin-bottom: 15px;
 
-            animation: glow 2s infinite alternate;
-
+            animation:
+                pulse 2s infinite;
         }
 
 
-        @keyframes glow {
+        @keyframes pulse {
 
-            from {
-
-                text-shadow:
-                    0 0 5px #00f5ff;
-
+            0% {
+                transform: scale(1);
             }
 
-            to {
-
-                text-shadow:
-                    0 0 25px #00f5ff,
-                    0 0 40px #9b5cff;
-
+            50% {
+                transform: scale(1.08);
             }
 
+            100% {
+                transform: scale(1);
+            }
         }
 
 
-        .upload-box p {
+        .upload-area p {
 
-            color: #b7c0da;
+            color: #9ca8c7;
 
-            margin-bottom: 15px;
-
+            margin-bottom: 10px;
         }
 
 
-        input[type="file"] {
+        .upload-area span {
 
-            width: 100%;
+            color: #00f5ff;
 
-            padding: 10px;
-
-            color: #b7c0da;
-
+            font-size: 13px;
         }
 
 
-        /* ==========================================
+        #imageInput {
+
+            display: none;
+        }
+
+
+        /* ------------------------------
            IMAGE PREVIEW
-        ========================================== */
+        ------------------------------ */
 
         #preview {
 
-            display: none;
+            max-width: 100%;
 
-            width: 100%;
-
-            max-height: 300px;
-
-            object-fit: contain;
-
-            margin-top: 20px;
+            max-height: 260px;
 
             border-radius: 12px;
 
-            border: 1px solid rgba(0, 245, 255, 0.4);
+            margin-top: 20px;
+
+            display: none;
+
+            border: 1px solid #00f5ff;
 
             box-shadow:
-                0 0 20px rgba(0, 245, 255, 0.15);
-
+                0 0 20px rgba(
+                    0,
+                    245,
+                    255,
+                    0.2
+                );
         }
 
 
-        /* ==========================================
-           ANALYZE BUTTON
-        ========================================== */
+        /* ------------------------------
+           BUTTON
+        ------------------------------ */
 
         #analyzeButton {
 
@@ -357,32 +365,36 @@
 
             margin-top: 20px;
 
-            padding: 16px;
+            padding: 15px;
 
             border: none;
 
-            border-radius: 12px;
+            border-radius: 10px;
 
             background:
                 linear-gradient(
                     90deg,
-                    #00bcd4,
+                    #00f5ff,
                     #9b5cff
                 );
 
             color: white;
 
-            font-size: 16px;
+            font-size: 17px;
 
             font-weight: bold;
 
             cursor: pointer;
 
             box-shadow:
-                0 0 15px rgba(0, 245, 255, 0.3);
+                0 0 20px rgba(
+                    0,
+                    245,
+                    255,
+                    0.3
+                );
 
             transition: 0.3s;
-
         }
 
 
@@ -391,339 +403,185 @@
             transform: translateY(-2px);
 
             box-shadow:
-                0 0 25px rgba(0, 245, 255, 0.6);
-
+                0 0 30px rgba(
+                    0,
+                    245,
+                    255,
+                    0.5
+                );
         }
 
 
         #analyzeButton:disabled {
 
-            opacity: 0.6;
+            opacity: 0.5;
 
             cursor: not-allowed;
 
             transform: none;
-
         }
 
 
-        /* ==========================================
-           EMPTY STATE
-        ========================================== */
+        /* ------------------------------
+           RESULT
+        ------------------------------ */
 
-        .empty-state {
-
-            text-align: center;
-
-            padding: 60px 20px;
-
-            color: #66708f;
-
-        }
-
-
-        .empty-state-icon {
-
-            font-size: 50px;
-
-            margin-bottom: 15px;
-
-        }
-
-
-        /* ==========================================
-           RESULT BOX
-        ========================================== */
-
-        #resultBox {
-
-            display: none;
-
-        }
-
-
-        .result-title {
-
-            color: #9b5cff;
+        .result-box {
 
             margin-bottom: 20px;
-
-            font-size: 14px;
-
-            letter-spacing: 2px;
-
-            text-transform: uppercase;
-
-        }
-
-
-        #resultText {
-
-            font-size: 30px;
-
-            font-weight: bold;
-
-            color: #00f5ff;
-
-            margin-bottom: 25px;
-
-            text-shadow:
-                0 0 12px rgba(0, 245, 255, 0.7);
-
-        }
-
-
-        /* ==========================================
-           REPORT SECTIONS
-        ========================================== */
-
-        .report-section {
-
-            margin-top: 20px;
 
             padding: 20px;
 
             border-radius: 14px;
 
-            background:
-                rgba(255, 255, 255, 0.025);
+            background: rgba(
+                0,
+                245,
+                255,
+                0.05
+            );
 
-            border: 1px solid rgba(155, 92, 255, 0.25);
-
+            border: 1px solid rgba(
+                0,
+                245,
+                255,
+                0.15
+            );
         }
 
 
-        .report-section h3 {
-
-            color: #9b5cff;
-
-            font-size: 15px;
-
-            margin-bottom: 12px;
-
-            text-transform: uppercase;
-
-            letter-spacing: 1px;
-
-        }
-
-
-        .report-section p {
-
-            color: #c2c9dd;
-
-            line-height: 1.6;
-
-            font-size: 14px;
-
-        }
-
-
-        /* ==========================================
-           MODEL SCORE
-        ========================================== */
-
-        .score {
-
-            font-size: 32px !important;
-
-            font-weight: bold;
-
-            color: #00f5ff !important;
-
-            text-shadow:
-                0 0 10px rgba(0, 245, 255, 0.6);
-
-        }
-
-
-        .score-note {
-
-            margin-top: 8px;
-
-            font-size: 12px !important;
-
-            color: #727c9a !important;
-
-        }
-
-
-        /* ==========================================
-           LISTS
-        ========================================== */
-
-        .report-section ul {
-
-            list-style: none;
-
-            padding: 0;
-
-        }
-
-
-        .report-section li {
-
-            color: #c2c9dd;
-
-            padding: 9px 0 9px 25px;
-
-            position: relative;
-
-            line-height: 1.5;
-
-            font-size: 14px;
-
-        }
-
-
-        .report-section li::before {
-
-            content: "◆";
-
-            position: absolute;
-
-            left: 0;
+        .result-box h3 {
 
             color: #00f5ff;
 
-            text-shadow:
-                0 0 8px #00f5ff;
+            font-size: 15px;
 
+            margin-bottom: 8px;
         }
 
 
-        /* ==========================================
+        .result-box p {
+
+            color: #e7ecff;
+
+            line-height: 1.5;
+        }
+
+
+        #resultText {
+
+            font-size: 25px;
+
+            font-weight: bold;
+
+            color: #00ff9d;
+
+            text-shadow:
+                0 0 10px rgba(
+                    0,
+                    255,
+                    157,
+                    0.5
+                );
+        }
+
+
+        /* ------------------------------
+           LISTS
+        ------------------------------ */
+
+        ul {
+
+            padding-left: 20px;
+
+            color: #c6cee7;
+
+            line-height: 1.8;
+        }
+
+
+        /* ------------------------------
+           EMPTY STATE
+        ------------------------------ */
+
+        #emptyState {
+
+            color: #7f8aaa;
+
+            text-align: center;
+
+            padding: 40px 10px;
+
+            line-height: 1.7;
+        }
+
+
+        /* ------------------------------
            DISCLAIMER
-        ========================================== */
+        ------------------------------ */
 
         .disclaimer {
 
             margin-top: 30px;
 
-            padding: 15px;
+            padding: 18px;
 
             border-radius: 12px;
 
-            border: 1px solid rgba(255, 193, 7, 0.3);
+            background: rgba(
+                255,
+                180,
+                0,
+                0.06
+            );
 
-            background:
-                rgba(255, 193, 7, 0.04);
+            border: 1px solid rgba(
+                255,
+                180,
+                0,
+                0.2
+            );
 
-            color: #9fa8bf;
+            color: #c5c9d9;
 
-            font-size: 12px;
+            font-size: 13px;
 
             line-height: 1.6;
 
             text-align: center;
-
         }
 
 
-        /* ==========================================
-           FOOTER
-        ========================================== */
-
-        .footer {
-
-            text-align: center;
-
-            margin-top: 25px;
-
-            color: #56617e;
-
-            font-size: 12px;
-
-        }
-
-
-        /* ==========================================
-           RESPONSIVE DESIGN
-        ========================================== */
+        /* ------------------------------
+           RESPONSIVE
+        ------------------------------ */
 
         @media (max-width: 850px) {
 
             .dashboard {
 
                 grid-template-columns: 1fr;
-
             }
 
 
             .hero h1 {
 
                 font-size: 36px;
-
             }
 
+
+            nav {
+
+                padding: 0 5%;
+            }
+
+
+            .status {
+
+                display: none;
+            }
         }
 
-
-        @media (max-width: 550px) {
-
-            body {
-
-                padding: 10px;
-
-            }
-
-
-            .navbar {
-
-                padding: 15px;
-
-            }
-
-
-            .brand {
-
-                font-size: 15px;
-
-            }
-
-
-            .system-status {
-
-                font-size: 10px;
-
-            }
-
-
-            .container {
-
-                margin-top: 25px;
-
-            }
-
-
-            .hero h1 {
-
-                font-size: 30px;
-
-            }
-
-
-            .hero p {
-
-                font-size: 14px;
-
-            }
-
-
-            .card {
-
-                padding: 20px;
-
-            }
-
-
-            #resultText {
-
-                font-size: 24px;
-
-            }
-
-        }
 
     </style>
 
@@ -733,22 +591,22 @@
 <body>
 
 
-    <!-- ==========================================
-         NAVBAR
-    =========================================== -->
+    <!-- NAVBAR -->
 
-    <nav class="navbar">
+    <nav>
 
-        <div class="brand">
+        <div class="logo">
 
-            <span class="brand-icon">👁️</span>
+            <span class="eye-icon">👁️</span>
 
-            <span>Glaucoma Detection System</span>
+            <span>
+                Glaucoma Detection System
+            </span>
 
         </div>
 
 
-        <div class="system-status">
+        <div class="status">
 
             ● SYSTEM ONLINE
 
@@ -758,9 +616,7 @@
 
 
 
-    <!-- ==========================================
-         MAIN
-    =========================================== -->
+    <!-- MAIN -->
 
     <main class="container">
 
@@ -770,224 +626,167 @@
         <section class="hero">
 
             <h1>
-                Glaucoma <span>Detection System</span>
+                AI Glaucoma Screening
             </h1>
 
             <p>
-                AI-based retinal fundus image screening prototype
+                Upload a retinal image and let the
+                prototype AI model analyze it.
             </p>
 
         </section>
 
 
 
-        <!-- ======================================
-             DASHBOARD
-        ======================================= -->
+        <!-- DASHBOARD -->
 
-        <div class="dashboard">
+        <section class="dashboard">
 
 
-            <!-- ==================================
-                 LEFT CARD - UPLOAD
-            =================================== -->
+            <!-- UPLOAD CARD -->
 
             <div class="card">
 
-                <h2>Upload Image</h2>
-
-                <p class="card-subtitle">
-                    Select a retinal fundus image for screening
-                </p>
+                <h2>
+                    Upload Retinal Image
+                </h2>
 
 
-                <div class="upload-box">
+                <label
+                    class="upload-area"
+                    for="imageInput"
+                >
 
                     <div class="upload-icon">
                         👁️
                     </div>
 
-
                     <p>
-                        Select a retinal fundus image
+                        Click to select a retinal image
                     </p>
 
+                    <span>
+                        JPG / JPEG / PNG
+                    </span>
 
-                    <input
-                        type="file"
-                        name="image"
-                        id="imageInput"
-                        accept="image/*"
-                    >
+                </label>
 
 
-                    <img
-                        id="preview"
-                        alt="Fundus image preview"
-                    >
+                <input
+                    type="file"
+                    id="imageInput"
+                    accept="image/*"
+                >
 
-                </div>
+
+                <img
+                    id="preview"
+                    alt="Retinal image preview"
+                >
 
 
                 <button
-                    type="button"
                     id="analyzeButton"
-                    onclick="analyzeImage()"
+                    disabled
                 >
-
-                    ✦ ANALYZE IMAGE
-
+                    Analyze Image
                 </button>
 
             </div>
 
 
 
-            <!-- ==================================
-                 RIGHT CARD - RESULTS
-            =================================== -->
+            <!-- REPORT CARD -->
 
             <div class="card">
 
-                <h2>AI Screening Report</h2>
-
-                <p class="card-subtitle">
-                    Analysis generated by the project model
-                </p>
+                <h2>
+                    Screening Report
+                </h2>
 
 
-                <!-- EMPTY STATE -->
+                <div id="emptyState">
 
-                <div
-                    id="emptyState"
-                    class="empty-state"
-                >
-
-                    <div class="empty-state-icon">
-                        🔬
-                    </div>
-
-                    <p>
-                        Upload an image and click
-                        <b>Analyze Image</b>
-                        to generate a screening report.
-                    </p>
+                    Upload a retinal image and click
+                    <strong>Analyze Image</strong>
+                    to generate the screening report.
 
                 </div>
 
 
-
-                <!-- RESULT BOX -->
-
-                <div id="resultBox">
+                <div
+                    id="resultBox"
+                    style="display: none;"
+                >
 
 
                     <!-- RESULT -->
 
-                    <div class="report-section">
+                    <div class="result-box">
 
-                        <div class="result-title">
+                        <h3>
                             Screening Result
-                        </div>
+                        </h3>
 
                         <p id="resultText">
-                            Waiting for analysis...
+                            -
                         </p>
 
                     </div>
 
 
+                    <!-- CONFIDENCE -->
 
-                    <!-- MODEL SCORE -->
-
-                    <div class="report-section">
+                    <div class="result-box">
 
                         <h3>
-                            Model Estimate
+                            Screening Confidence
                         </h3>
 
-                        <p
-                            id="modelScore"
-                            class="score"
-                        >
-                            —
-                        </p>
-
-                        <p class="score-note">
-                            Prototype model estimate only.
-                            This is not a clinical probability.
+                        <p id="modelScore">
+                            Not available
                         </p>
 
                     </div>
-
-
-
-                    <!-- STAGE -->
-
-                    <div class="report-section">
-
-                        <h3>
-                            Stage Estimate
-                        </h3>
-
-                        <p id="stageText">
-                            Waiting for analysis...
-                        </p>
-
-                    </div>
-
 
 
                     <!-- RISK FACTORS -->
 
-                    <div class="report-section">
+                    <div class="result-box">
 
                         <h3>
                             Educational Risk Factors
                         </h3>
 
                         <ul id="riskFactors">
-
-                            <li>
-                                Waiting for analysis...
-                            </li>
-
                         </ul>
 
                     </div>
 
 
-
                     <!-- ABOUT -->
 
-                    <div class="report-section">
+                    <div class="result-box">
 
                         <h3>
                             About This Result
                         </h3>
 
                         <p id="aboutText">
-                            Waiting for analysis...
                         </p>
 
                     </div>
 
 
-
                     <!-- NEXT STEPS -->
 
-                    <div class="report-section">
+                    <div class="result-box">
 
                         <h3>
                             Suggested Next Steps
                         </h3>
 
                         <ul id="nextSteps">
-
-                            <li>
-                                Waiting for analysis...
-                            </li>
-
                         </ul>
 
                     </div>
@@ -995,38 +794,21 @@
 
                 </div>
 
+
             </div>
 
-        </div>
+        </section>
 
 
 
-        <!-- ======================================
-             DISCLAIMER
-        ======================================= -->
+        <!-- DISCLAIMER -->
 
         <div class="disclaimer">
 
-            ⚠️ <b>Important:</b>
-            This is a college-project AI screening prototype.
+            ⚠️ This system is an educational AI prototype.
             It is not a medical diagnostic tool.
-            Results should not be used to make medical decisions.
-
-        </div>
-
-
-
-        <!-- ======================================
-             FOOTER
-        ======================================= -->
-
-        <div class="footer">
-
-            Glaucoma Detection System
-            • Python
-            • OpenCV
-            • Machine Learning
-            • Flask
+            The screening confidence shown by the model
+            should not be interpreted as a clinical probability.
 
         </div>
 
@@ -1034,13 +816,7 @@
     </main>
 
 
-
-    <!-- ==========================================
-         JAVASCRIPT
-    =========================================== -->
-
     <script src="script.js"></script>
-
 
 </body>
 
