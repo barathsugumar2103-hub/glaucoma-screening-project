@@ -4,43 +4,43 @@ const analyzeButton = document.getElementById("analyzeButton");
 
 const resultBox = document.getElementById("resultBox");
 const emptyState = document.getElementById("emptyState");
-const resultText = document.getElementById("resultText");
 
+const resultText = document.getElementById("resultText");
 const modelScore = document.getElementById("modelScore");
+
 const stageText = document.getElementById("stageText");
 const riskFactors = document.getElementById("riskFactors");
+
 const aboutText = document.getElementById("aboutText");
 const nextSteps = document.getElementById("nextSteps");
 
 
-// ========================================
-// IMAGE PREVIEW
-// ========================================
+// ------------------------------------------
+// Image preview
+// ------------------------------------------
 
 imageInput.addEventListener("change", function () {
 
     const file = this.files[0];
 
-    if (file) {
-
-        preview.src = URL.createObjectURL(file);
-
-        preview.style.display = "block";
-
-        resultBox.style.display = "none";
-
-        if (emptyState) {
-            emptyState.style.display = "block";
-        }
-
+    if (!file) {
+        return;
     }
 
+    preview.src = URL.createObjectURL(file);
+    preview.style.display = "block";
+
+    resultBox.style.display = "none";
+
+    if (emptyState) {
+        emptyState.style.display = "block";
+    }
 });
 
 
-// ========================================
-// DISPLAY LIST ITEMS
-// ========================================
+// ------------------------------------------
+// Create list items
+// ------------------------------------------
 
 function fillList(element, items) {
 
@@ -70,13 +70,12 @@ function fillList(element, items) {
         element.appendChild(li);
 
     });
-
 }
 
 
-// ========================================
-// ANALYZE IMAGE
-// ========================================
+// ------------------------------------------
+// Analyze image
+// ------------------------------------------
 
 async function analyzeImage() {
 
@@ -87,18 +86,13 @@ async function analyzeImage() {
         alert("Please select a retinal image first.");
 
         return;
-
     }
 
-
-    // Disable button while analyzing
 
     analyzeButton.disabled = true;
 
     analyzeButton.textContent = "◌ ANALYZING...";
 
-
-    // Create form data
 
     const formData = new FormData();
 
@@ -106,10 +100,6 @@ async function analyzeImage() {
 
 
     try {
-
-        // ========================================
-        // CONNECT TO FLASK RENDER API
-        // ========================================
 
         const response = await fetch(
             "https://glaucoma-screening-project-die1.onrender.com/predict",
@@ -123,30 +113,25 @@ async function analyzeImage() {
         const data = await response.json();
 
 
-        // ========================================
-        // ERROR CHECK
-        // ========================================
-
         if (!response.ok || data.error) {
 
             throw new Error(
                 data.error || "Analysis failed."
             );
-
         }
 
 
-        // ========================================
-        // SCREENING RESULT
-        // ========================================
+        // ------------------------------------------
+        // Screening result
+        // ------------------------------------------
 
         resultText.textContent =
             data.result || "No result returned";
 
 
-        // ========================================
-        // MODEL SCORE
-        // ========================================
+        // ------------------------------------------
+        // Model score
+        // ------------------------------------------
 
         if (
             data.model_score !== null &&
@@ -160,31 +145,21 @@ async function analyzeImage() {
 
             modelScore.textContent =
                 "Unavailable";
-
         }
 
 
-        // ========================================
-        // STAGE
-        // ========================================
+        // ------------------------------------------
+        // Stage
+        // ------------------------------------------
 
         stageText.textContent =
             data.stage ||
             "Stage estimation unavailable.";
 
 
-        // ========================================
-        // ABOUT RESULT
-        // ========================================
-
-        aboutText.textContent =
-            data.about ||
-            "No additional information available.";
-
-
-        // ========================================
-        // RISK FACTORS
-        // ========================================
+        // ------------------------------------------
+        // Risk factors
+        // ------------------------------------------
 
         fillList(
             riskFactors,
@@ -192,9 +167,18 @@ async function analyzeImage() {
         );
 
 
-        // ========================================
-        // NEXT STEPS
-        // ========================================
+        // ------------------------------------------
+        // About result
+        // ------------------------------------------
+
+        aboutText.textContent =
+            data.about ||
+            "No additional information available.";
+
+
+        // ------------------------------------------
+        // Next steps
+        // ------------------------------------------
 
         fillList(
             nextSteps,
@@ -202,19 +186,19 @@ async function analyzeImage() {
         );
 
 
-        // ========================================
-        // SHOW REPORT
-        // ========================================
-
+        // Hide empty state
         if (emptyState) {
+
             emptyState.style.display = "none";
+
         }
 
+
+        // Show result
         resultBox.style.display = "block";
 
 
-        // Scroll to report on mobile
-
+        // Scroll to result
         resultBox.scrollIntoView({
             behavior: "smooth",
             block: "nearest"
@@ -226,18 +210,17 @@ async function analyzeImage() {
         console.error(error);
 
 
-        // ========================================
-        // CONNECTION ERROR
-        // ========================================
-
         resultText.textContent =
             "Unable to connect to the AI server.";
 
 
-        modelScore.textContent = "—";
+        modelScore.textContent =
+            "—";
+
 
         stageText.textContent =
             "Unavailable";
+
 
         aboutText.textContent =
             "The AI server could not return a screening report.";
@@ -248,28 +231,26 @@ async function analyzeImage() {
             []
         );
 
+
         fillList(
             nextSteps,
-            [] 
+            []
         );
 
 
         if (emptyState) {
+
             emptyState.style.display = "none";
+
         }
 
-        resultBox.style.display = "block";
 
+        resultBox.style.display = "block";
     }
 
-
-    // ========================================
-    // RESET BUTTON
-    // ========================================
 
     analyzeButton.disabled = false;
 
     analyzeButton.textContent =
         "✦ ANALYZE IMAGE";
-
 }
