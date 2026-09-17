@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Glaucoma Screening System</title>
+    <title>Glaucoma Detection System</title>
 
     <style>
 
@@ -16,111 +16,482 @@
             padding: 0;
         }
 
+        :root {
+            --bg: #050816;
+            --panel: rgba(13, 20, 43, 0.78);
+            --cyan: #00f5ff;
+            --purple: #9b5cff;
+            --text: #f5f7ff;
+            --muted: #929bb7;
+            --border: rgba(0, 245, 255, 0.22);
+        }
+
         body {
             font-family: Arial, sans-serif;
             min-height: 100vh;
-            background: #eef2f7;
+            color: var(--text);
+            background:
+                radial-gradient(circle at 10% 10%, rgba(0, 245, 255, 0.12), transparent 30%),
+                radial-gradient(circle at 90% 20%, rgba(155, 92, 255, 0.15), transparent 30%),
+                radial-gradient(circle at 50% 100%, rgba(0, 245, 255, 0.07), transparent 35%),
+                var(--bg);
+            padding: 25px;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+
+        .page {
+            width: 100%;
+            max-width: 1100px;
+            margin: auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* NAVBAR */
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 5px 25px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+        }
+
+        .brand-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 15px;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 30px;
+            font-size: 25px;
+            background: rgba(0, 245, 255, 0.08);
+            border: 1px solid rgba(0, 245, 255, 0.35);
+            box-shadow:
+                0 0 15px rgba(0, 245, 255, 0.2),
+                inset 0 0 15px rgba(0, 245, 255, 0.06);
         }
 
-        .container {
-            width: 100%;
+        .brand h2 {
+            font-size: 17px;
+            letter-spacing: 0.5px;
+        }
+
+        .brand p {
+            color: var(--muted);
+            font-size: 11px;
+            margin-top: 4px;
+        }
+
+        .status {
+            color: var(--cyan);
+            font-size: 11px;
+            font-weight: bold;
+            padding: 8px 13px;
+            border-radius: 30px;
+            border: 1px solid rgba(0, 245, 255, 0.3);
+            background: rgba(0, 245, 255, 0.06);
+            box-shadow: 0 0 15px rgba(0, 245, 255, 0.08);
+        }
+
+        /* HERO */
+
+        .hero {
+            padding: 55px 0 35px;
+            max-width: 760px;
+        }
+
+        .eyebrow {
+            color: var(--cyan);
+            font-size: 11px;
+            font-weight: bold;
+            letter-spacing: 3px;
+            margin-bottom: 18px;
+            text-shadow: 0 0 12px rgba(0,245,255,0.6);
+        }
+
+        .hero h1 {
+            font-size: clamp(38px, 6vw, 65px);
+            line-height: 1.05;
+            letter-spacing: -2px;
+            margin-bottom: 20px;
+        }
+
+        .hero h1 span {
+            background: linear-gradient(
+                90deg,
+                var(--cyan),
+                #5ee7ff,
+                var(--purple)
+            );
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: none;
+        }
+
+        .hero p {
+            color: var(--muted);
+            line-height: 1.8;
+            font-size: 14px;
             max-width: 650px;
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.12);
-            text-align: center;
         }
 
-        .icon {
-            font-size: 50px;
-            margin-bottom: 15px;
+        /* DASHBOARD */
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 22px;
+            align-items: start;
         }
 
-        h1 {
-            font-size: 32px;
-            margin-bottom: 10px;
-            color: #1d2939;
+        .card {
+            background: var(--panel);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 26px;
+            box-shadow:
+                0 20px 60px rgba(0,0,0,0.35),
+                inset 0 0 25px rgba(255,255,255,0.015);
         }
 
-        .subtitle {
-            color: #667085;
-            margin-bottom: 30px;
+        .card:hover {
+            border-color: rgba(0,245,255,0.35);
+            box-shadow:
+                0 20px 60px rgba(0,0,0,0.35),
+                0 0 25px rgba(0,245,255,0.06);
         }
+
+        .card-heading {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 22px;
+        }
+
+        .card-icon {
+            width: 43px;
+            height: 43px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 13px;
+            color: var(--cyan);
+            font-size: 21px;
+            border: 1px solid rgba(0,245,255,0.25);
+            background: rgba(0,245,255,0.06);
+            box-shadow: 0 0 18px rgba(0,245,255,0.08);
+        }
+
+        .card-heading h2 {
+            font-size: 17px;
+        }
+
+        .card-heading p {
+            color: var(--muted);
+            font-size: 11px;
+            margin-top: 5px;
+        }
+
+        /* UPLOAD */
 
         .upload-box {
-            border: 2px dashed #98a2b3;
-            border-radius: 15px;
-            padding: 30px;
-            margin-bottom: 20px;
-            cursor: pointer;
+            min-height: 250px;
+            border: 1.5px dashed rgba(0,245,255,0.28);
+            border-radius: 18px;
+            background:
+                radial-gradient(
+                    circle at center,
+                    rgba(0,245,255,0.055),
+                    transparent 65%
+                );
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 25px;
+            text-align: center;
+            transition: 0.3s;
         }
 
         .upload-box:hover {
-            border-color: #344054;
-            background: #f9fafb;
+            border-color: var(--cyan);
+            box-shadow:
+                inset 0 0 25px rgba(0,245,255,0.05),
+                0 0 20px rgba(0,245,255,0.08);
+        }
+
+        .upload-symbol {
+            width: 65px;
+            height: 65px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 30px;
+            margin-bottom: 17px;
+            border: 1px solid rgba(0,245,255,0.3);
+            background: rgba(0,245,255,0.07);
+            box-shadow:
+                0 0 20px rgba(0,245,255,0.13),
+                inset 0 0 20px rgba(0,245,255,0.05);
+            animation: pulse 3s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                box-shadow:
+                    0 0 18px rgba(0,245,255,0.1),
+                    inset 0 0 15px rgba(0,245,255,0.05);
+            }
+
+            50% {
+                box-shadow:
+                    0 0 30px rgba(0,245,255,0.3),
+                    inset 0 0 20px rgba(0,245,255,0.1);
+            }
+        }
+
+        .upload-box h3 {
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .upload-box p {
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.6;
         }
 
         input[type="file"] {
-            margin: 15px;
+            margin-top: 20px;
+            max-width: 100%;
+            color: var(--muted);
+            font-size: 11px;
         }
+
+        input[type="file"]::file-selector-button {
+            border: 1px solid rgba(0,245,255,0.3);
+            border-radius: 9px;
+            background: rgba(0,245,255,0.08);
+            color: var(--cyan);
+            padding: 10px 13px;
+            margin-right: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* IMAGE */
 
         #preview {
-            max-width: 100%;
-            max-height: 300px;
-            border-radius: 12px;
-            margin-top: 20px;
             display: none;
+            max-width: 100%;
+            max-height: 260px;
+            object-fit: contain;
+            margin-top: 20px;
+            border-radius: 13px;
+            border: 1px solid rgba(0,245,255,0.3);
+            box-shadow: 0 0 25px rgba(0,245,255,0.1);
         }
 
-        button {
+        /* BUTTON */
+
+        #analyzeButton {
             width: 100%;
-            padding: 14px;
-            border: none;
-            border-radius: 10px;
-            background: #1d2939;
-            color: white;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background: #344054;
-        }
-
-        .result {
-            margin-top: 25px;
-            padding: 20px;
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid rgba(0,245,255,0.5);
             border-radius: 12px;
-            background: #f2f4f7;
+            background: linear-gradient(
+                90deg,
+                #00b8c4,
+                #00f5ff,
+                #9b5cff
+            );
+            color: #041017;
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow:
+                0 0 20px rgba(0,245,255,0.2);
+            transition: 0.25s;
         }
 
-        .result h2 {
-            margin-bottom: 8px;
-            color: #1d2939;
+        #analyzeButton:hover {
+            transform: translateY(-2px);
+            box-shadow:
+                0 0 30px rgba(0,245,255,0.35);
         }
 
-        .result p {
-            font-size: 20px;
+        #analyzeButton:disabled {
+            opacity: 0.55;
+            cursor: wait;
+            transform: none;
+        }
+
+        /* RESULT */
+
+        .result-box {
+            margin-top: 5px;
+            padding: 22px;
+            border-radius: 17px;
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(0,245,255,0.05),
+                    rgba(155,92,255,0.05)
+                );
+            border: 1px solid rgba(0,245,255,0.16);
+        }
+
+        .result-label {
+            color: var(--cyan);
+            font-size: 10px;
+            letter-spacing: 2px;
             font-weight: bold;
+            margin-bottom: 10px;
         }
+
+        #resultText {
+            font-size: 22px;
+            font-weight: bold;
+            line-height: 1.4;
+        }
+
+        .result-box p {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        .empty-text {
+            font-size: 16px !important;
+        }
+
+        /* REPORT */
+
+        .report-section {
+            margin-top: 22px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.07);
+        }
+
+        .report-section h3 {
+            font-size: 13px;
+            margin-bottom: 11px;
+            color: var(--text);
+        }
+
+        .report-section ul {
+            padding-left: 18px;
+        }
+
+        .report-section li {
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.7;
+            margin-bottom: 5px;
+        }
+
+        .score-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid rgba(0,245,255,0.15);
+            background: rgba(0,245,255,0.035);
+        }
+
+        .score-card span {
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .score-card strong {
+            color: var(--cyan);
+            font-size: 21px;
+            text-shadow: 0 0 12px rgba(0,245,255,0.4);
+        }
+
+        .score-note {
+            color: #737f99 !important;
+            font-size: 10px !important;
+            margin-top: 9px;
+        }
+
+        /* DISCLAIMER */
 
         .disclaimer {
-            margin-top: 25px;
-            font-size: 12px;
-            color: #667085;
-            line-height: 1.5;
+            margin-top: 22px;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,193,7,0.22);
+            background: rgba(255,193,7,0.04);
+            color: #c8b77c;
+            font-size: 10px;
+            line-height: 1.7;
         }
 
+        /* FOOTER */
+
         .footer {
-            margin-top: 20px;
-            font-size: 12px;
-            color: #98a2b3;
+            text-align: center;
+            color: #58657e;
+            font-size: 10px;
+            padding: 30px 0 10px;
+        }
+
+        /* MOBILE */
+
+        @media (max-width: 760px) {
+
+            body {
+                padding: 15px;
+            }
+
+            .navbar {
+                align-items: flex-start;
+            }
+
+            .status {
+                font-size: 9px;
+            }
+
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+
+            .hero {
+                padding: 40px 0 30px;
+            }
+
+            .hero h1 {
+                font-size: 42px;
+            }
+
+            .card {
+                padding: 20px;
+            }
         }
 
     </style>
@@ -129,62 +500,296 @@
 
 <body>
 
-    <div class="container">
+<div class="page">
 
-        <div class="icon">👁️</div>
+    <!-- NAVBAR -->
 
-        <h1>Glaucoma Screening System</h1>
+    <nav class="navbar">
 
-        <p class="subtitle">
-            AI-based retinal fundus image screening prototype
+        <div class="brand">
+
+            <div class="brand-icon">
+                👁️
+            </div>
+
+            <div>
+                <h2>Glaucoma Detection System</h2>
+
+                <p>
+                    AI-based retinal image analysis
+                </p>
+            </div>
+
+        </div>
+
+        <div class="status">
+            ● SYSTEM ONLINE
+        </div>
+
+    </nav>
+
+
+    <!-- HERO -->
+
+    <header class="hero">
+
+        <div class="eyebrow">
+            AI-ASSISTED EYE SCREENING
+        </div>
+
+        <h1>
+            Glaucoma<br>
+            <span>Detection System</span>
+        </h1>
+
+        <p>
+            Upload a retinal fundus image and analyze it
+            using our machine-learning screening prototype.
         </p>
 
-        <form action="/predict" method="POST" enctype="multipart/form-data">
+    </header>
 
-            <div class="upload-box">
 
-                <p>Select a retinal fundus image</p>
+    <!-- DASHBOARD -->
 
-                <input
-                    type="file"
-                    name="image"
-                    id="imageInput"
-                    accept="image/*"
-                    required
-                >
+    <main class="dashboard">
 
-                <img id="preview" alt="Fundus image preview">
+
+        <!-- IMAGE ANALYSIS -->
+
+        <section class="card">
+
+            <div class="card-heading">
+
+                <div class="card-icon">
+                    ◉
+                </div>
+
+                <div>
+
+                    <h2>
+                        Image Analysis
+                    </h2>
+
+                    <p>
+                        Upload a retinal fundus image
+                    </p>
+
+                </div>
 
             </div>
 
-           <button type="button" id="analyzeButton" onclick="analyzeImage()">
-    🔍 Analyze Image
-</button>
 
-        </form>
+            <form>
 
-       <div id="resultBox" class="result-box" style="display: none;">
-    <h2>Screening Result</h2>
-    <p id="resultText"></p>
+                <div class="upload-box">
+
+                    <div class="upload-symbol">
+                        👁️
+                    </div>
+
+                    <h3>
+                        Select retinal image
+                    </h3>
+
+                    <p>
+                        Choose a clear fundus image
+                        from your device.
+                    </p>
+
+
+                    <input
+                        type="file"
+                        name="image"
+                        id="imageInput"
+                        accept="image/*"
+                        required
+                    >
+
+
+                    <img
+                        id="preview"
+                        alt="Fundus image preview"
+                    >
+
+                </div>
+
+
+                <button
+                    type="button"
+                    id="analyzeButton"
+                    onclick="analyzeImage()"
+                >
+                    ✦ ANALYZE IMAGE
+                </button>
+
+            </form>
+
+
+            <div class="disclaimer">
+
+                ⚠️ This is a college-project prototype,
+                not a medical diagnostic tool. Results
+                should not be used to make medical decisions.
+
+            </div>
+
+        </section>
+
+
+        <!-- SCREENING REPORT -->
+
+        <section class="card">
+
+            <div class="card-heading">
+
+                <div class="card-icon">
+                    ✧
+                </div>
+
+                <div>
+
+                    <h2>
+                        Screening Report
+                    </h2>
+
+                    <p>
+                        AI model output
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div
+                id="resultBox"
+                class="result-box"
+                style="display: none;"
+            >
+
+                <div class="result-label">
+                    SCREENING RESULT
+                </div>
+
+                <p id="resultText">
+                </p>
+
+
+                <div class="report-section">
+
+                    <h3>
+                        Model estimate
+                    </h3>
+
+                    <div class="score-card">
+
+                        <span>
+                            Glaucoma-class score
+                        </span>
+
+                        <strong id="modelScore">
+                            —
+                        </strong>
+
+                    </div>
+
+                    <p class="score-note">
+                        Prototype model estimate only;
+                        not a medical probability.
+                    </p>
+
+                </div>
+
+
+                <div class="report-section">
+
+                    <h3>
+                        Stage estimate
+                    </h3>
+
+                    <p id="stageText">
+                        Stage estimation unavailable.
+                    </p>
+
+                </div>
+
+
+                <div class="report-section">
+
+                    <h3>
+                        Educational risk factors
+                    </h3>
+
+                    <ul id="riskFactors">
+                    </ul>
+
+                </div>
+
+
+                <div class="report-section">
+
+                    <h3>
+                        About this result
+                    </h3>
+
+                    <p id="aboutText">
+                    </p>
+
+                </div>
+
+
+                <div class="report-section">
+
+                    <h3>
+                        Suggested next steps
+                    </h3>
+
+                    <ul id="nextSteps">
+                    </ul>
+
+                </div>
+
+            </div>
+
+
+            <!-- EMPTY STATE -->
+
+            <div
+                id="emptyState"
+                class="result-box"
+            >
+
+                <div class="result-label">
+                    READY FOR ANALYSIS
+                </div>
+
+                <p class="empty-text">
+                    Your screening report will
+                    appear here after you analyze
+                    an image.
+                </p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <footer class="footer">
+
+        Glaucoma Detection System
+        · Student Project
+        · Python + OpenCV + Machine Learning
+
+    </footer>
+
 </div>
-        <div class="disclaimer">
 
-            ⚠️ This system is a college-project prototype.
-            It is not a medical diagnostic tool.
-            Results should not be used to make medical decisions.
 
-        </div>
+<script src="script.js"></script>
 
-        <div class="footer">
-
-            Glaucoma Screening Project • Python + OpenCV + Machine Learning
-
-        </div>
-
-    </div>
-
-    
-     <script src="script.js"></script>
 </body>
 
 </html>
