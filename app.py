@@ -50,159 +50,93 @@ def home():
         "message": "Glaucoma Screening API is running"
     })
 
-
 @app.route("/predict", methods=["POST"])
 def predict():
 
     if "image" not in request.files:
-
-        return jsonify({
-            "error": "No image uploaded"
-        }), 400
+        return jsonify({"error": "No image uploaded"}), 400
 
     file = request.files["image"]
 
     if file.filename == "":
-
-        return jsonify({
-            "error": "No image selected"
-        }), 400
+        return jsonify({"error": "No image selected"}), 400
 
     image_bytes = file.read()
 
     features = extract_features(image_bytes)
 
     if features is None:
+        return jsonify({"error": "Invalid image"}), 400
 
-        return jsonify({
-            "error": "Invalid image"
-        }), 400
-
-    # Make prediction
     prediction = model.predict([features])[0]
 
-    # --------------------------------
-    # POSSIBLE GLAUCOMA
-    # --------------------------------
+    # Get prototype model score
+    model_score = None
+
+    if hasattr(model, "predict_proba"):
+        probabilities = model.predict_proba([features])[0]
+
+        if len(probabilities) > 1:
+            model_score = round(float(probabilities[1]) * 100, 2)
 
     if prediction == 1:
 
         result = "Possible Glaucoma"
 
-        risk_level = "High"
-
         stage = "Stage estimation unavailable"
 
         risk_factors = [
-            "Family history of glaucoma",
-            "Increased eye pressure",
-            "Older age",
-            "Certain eye conditions",
-            "Some medical conditions or medications"
-        ]
-
-        warning_signs = [
-            "Early glaucoma may have no noticeable symptoms",
-            "Changes in peripheral vision can occur as glaucoma progresses",
-            "Some forms of glaucoma can cause eye pain or blurred vision"
-        ]
-
-        next_steps = [
-            "Consider a comprehensive eye examination",
-            "An eye-care professional can measure eye pressure",
-            "The optic nerve can be examined",
-            "Visual field testing may be performed"
+            "Increasing age can be associated with glaucoma risk.",
+            "Family history of glaucoma may increase risk.",
+            "High eye pressure is an important clinical risk factor.",
+            "Some medical conditions can be associated with increased risk."
         ]
 
         about = (
-            "Glaucoma is a group of eye diseases that can damage "
-            "the optic nerve and may lead to vision loss."
+            "The prototype model detected features associated with "
+            "the glaucoma class in the uploaded image."
         )
 
-    # --------------------------------
-    # LIKELY NORMAL
-    # --------------------------------
+        next_steps = [
+            "Consider professional eye examination.",
+            "An eye specialist can perform appropriate glaucoma tests.",
+            "Do not use this prototype result as a medical diagnosis."
+        ]
 
     else:
 
         result = "Likely Normal"
 
-        risk_level = "Lower screening concern"
-
-        stage = "Not applicable"
+        stage = "No glaucoma stage estimated"
 
         risk_factors = [
-            "Family history of glaucoma",
-            "Increased eye pressure",
-            "Older age",
-            "Certain eye conditions"
-        ]
-
-        warning_signs = [
-            "Early glaucoma may have no noticeable symptoms"
-        ]
-
-        next_steps = [
-            "Continue routine eye examinations",
-            "Seek professional evaluation if you have eye-related concerns"
+            "A normal prototype result does not rule out glaucoma.",
+            "Regular eye examinations can help detect eye problems early."
         ]
 
         about = (
-            "The prototype did not detect image patterns associated "
-            "with the glaucoma class."
+            "The prototype model classified this image as belonging "
+            "to the normal class."
         )
 
-    # --------------------------------
-    # MODEL SCORE
-    # --------------------------------
-
-    model_score = None
-
-    if hasattr(model, "predict_proba"):
-
-        probabilities = model.predict_proba([features])[0]
-
-        glaucoma_probability = probabilities[1]
-
-        model_score = round(glaucoma_probability * 100, 2)
-
-    # --------------------------------
-    # SEND RESPONSE
-    # --------------------------------
+        next_steps = [
+            "Continue routine eye examinations.",
+            "Seek professional evaluation if you have eye-related concerns.",
+            "Do not use this prototype result as a medical diagnosis."
+        ]
 
     return jsonify({
-
         "result": result,
-
         "model_score": model_score,
-
-        "risk_level": risk_level,
-
         "stage": stage,
-
         "risk_factors": risk_factors,
-
-        "warning_signs": warning_signs,
-
-        "next_steps": next_steps,
-
         "about": about,
-
-        "model_information": {
-            "algorithm": "Support Vector Machine (SVM)",
-            "features": "Histogram of Oriented Gradients (HOG)",
-            "image_size": "128 x 128 pixels"
-        },
-
+        "next_steps": next_steps,
         "disclaimer": (
-            "This is a college-project AI screening prototype. "
-            "The result is not a medical diagnosis and should not "
-            "be used to make medical decisions."
+            "This is a college-project screening prototype and "
+            "not a medical diagnostic tool."
         )
-
     })
-
-
 if __name__ == "__main__":
 
     app.run(
