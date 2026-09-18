@@ -22,18 +22,53 @@ with open(MODEL_FILE, "rb") as f:
 
 glaucoma_center = np.array(model["glaucoma_center"], dtype=np.float32)
 normal_center = np.array(model["normal_center"], dtype=np.float32)
-image_size = tuple(model.get("image_size", (128, 128)))
 
 EXPECTED_FEATURE_SIZE = len(glaucoma_center)
 
+
+def hog_feature_size(side):
+    cells = side // 8
+    if cells < 2:
+        return 0
+    return (cells - 1) * (cells - 1) * 9 * 4
+
+
+def find_compatible_image_size():
+    saved_size = model.get("image_size")
+
+    if saved_size:
+        try:
+            saved_size = tuple(saved_size)
+            if (
+                len(saved_size) == 2
+                and saved_size[0] == saved_size[1]
+                and hog_feature_size(saved_size[0]) == EXPECTED_FEATURE_SIZE
+            ):
+                return saved_size
+        except Exception:
+            pass
+
+    # Find the image size that produces exactly the number of
+    # HOG features stored in the model.
+    for side in range(32, 513, 8):
+        if hog_feature_size(side) == EXPECTED_FEATURE_SIZE:
+            return (side, side)
+
+    raise ValueError(
+        f"Feature size mismatch. Model expects {EXPECTED_FEATURE_SIZE} HOG features, "
+        "but no compatible square image size from 32 to 512 was found."
+    )
+
+
+image_size = find_compatible_image_size()
+
 print("Model loaded successfully.")
 print("Model type:", model.get("model_type", "Unknown"))
-print("Image size:", image_size)
+print("Using compatible image size:", image_size)
 print("Expected feature size:", EXPECTED_FEATURE_SIZE)
 
 
 def extract_skimage_features(image):
-    """HOG extractor compatible with the earlier scikit-image pipeline."""
     image = cv2.resize(image, image_size)
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
@@ -49,7 +84,6 @@ def extract_skimage_features(image):
 
 
 def extract_custom_features(image):
-    """Fallback HOG extractor used by the newer custom training pipeline."""
     image = cv2.resize(image, image_size)
 
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -111,10 +145,6 @@ def extract_custom_features(image):
 
 
 def extract_features(image):
-    """
-    Try the scikit-image HOG pipeline first, then the custom HOG pipeline.
-    The first feature vector whose size matches the saved model is used.
-    """
     candidates = []
 
     try:
@@ -129,11 +159,13 @@ def extract_features(image):
 
     for name, features in candidates:
         print(name, "feature size:", len(features))
+
         if len(features) == EXPECTED_FEATURE_SIZE:
             print("Using feature extractor:", name)
             return features, name
 
     sizes = [len(features) for _, features in candidates]
+
     raise ValueError(
         f"Feature size mismatch. Model expects {EXPECTED_FEATURE_SIZE}, "
         f"available extractors produced {sizes}."
@@ -144,6 +176,7 @@ def predict_image(features):
     features = np.asarray(features, dtype=np.float32)
 
     norm = np.linalg.norm(features)
+
     if norm > 0:
         features = features / norm
 
@@ -243,11 +276,17 @@ def predict():
 
         return jsonify({
             "result": result,
+
+            # This is intentionally called a screening percentage/model score,
+            # not a medical probability.
+            "screening_percentage": score,
             "model_score": score,
+
             "stage": stage,
             "risk_factors": risk_factors,
             "about": about,
             "next_steps": next_steps,
+
             "model_information": {
                 "model_type": model.get(
                     "model_type",
@@ -255,14 +294,17 @@ def predict():
                 ),
                 "feature_extractor": extractor_name,
                 "feature_size": EXPECTED_FEATURE_SIZE,
+                "image_size": list(image_size),
                 "training_images": 70,
                 "test_images": 16,
                 "test_accuracy": 75.0
             },
+
             "disclaimer": (
                 "This system is a college project prototype and is not "
-                "a medical diagnostic tool. The percentage shown is a "
-                "model score, not a medical probability or diagnosis."
+                "a medical diagnostic tool. The screening percentage is "
+                "a model score, not a medical probability, glaucoma stage, "
+                "or diagnosis."
             )
         })
 
