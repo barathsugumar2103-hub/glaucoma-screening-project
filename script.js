@@ -54,7 +54,9 @@ analyzeButton.addEventListener("click", async () => {
     screeningPercentage.textContent = typeof percentage === "number"
       ? `${percentage.toFixed(2)}%`
       : "N/A";
-    testAccuracy.textContent = data.model_information && typeof data.model_information.test_accuracy === "number"\n      ? `${data.model_information.test_accuracy.toFixed(1)}%`\n      : "N/A";
+    testAccuracy.textContent = data.model_information && typeof data.model_information.test_accuracy === "number"
+      ? `${data.model_information.test_accuracy.toFixed(1)}%`
+      : "N/A";
     aboutText.textContent = data.about || "No additional information available.";
 
     riskFactors.replaceChildren();
