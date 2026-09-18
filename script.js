@@ -51,6 +51,14 @@ analyzeButton.addEventListener("click", async () => {
       : data.model_score;
 
     resultText.textContent = data.result || "No result returned";
+
+    const resultSymbol = document.querySelector(".result-symbol");
+    resultSymbol.classList.remove("glaucoma", "normal");
+    if ((data.result || "").toLowerCase().includes("glaucoma")) {
+      resultSymbol.classList.add("glaucoma");
+    } else if ((data.result || "").toLowerCase().includes("normal")) {
+      resultSymbol.classList.add("normal");
+    }
     screeningPercentage.textContent = typeof percentage === "number"
       ? `${percentage.toFixed(2)}%`
       : "N/A";
