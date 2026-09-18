@@ -1,18 +1,7 @@
-// --------------------------------------------------
-// Glaucoma Detection System
-// Frontend JavaScript
-// --------------------------------------------------
-
-
-// Backend URL
-
+```javascript
 const API_URL =
     "https://glaucoma-screening-project-die1.onrender.com/predict";
 
-
-// --------------------------------------------------
-// Get HTML elements
-// --------------------------------------------------
 
 const imageInput =
     document.getElementById("imageInput");
@@ -32,6 +21,9 @@ const resultText =
 const modelScore =
     document.getElementById("modelScore");
 
+const stageText =
+    document.getElementById("stageText");
+
 const riskFactors =
     document.getElementById("riskFactors");
 
@@ -41,104 +33,81 @@ const aboutText =
 const nextSteps =
     document.getElementById("nextSteps");
 
-const emptyState =
-    document.getElementById("emptyState");
-
 
 // --------------------------------------------------
-// Store selected file
+// Image Selection
 // --------------------------------------------------
 
-let selectedFile = null;
+imageInput.addEventListener(
+    "change",
+    function () {
 
+        const file =
+            imageInput.files[0];
 
-// --------------------------------------------------
-// Image selection
-// --------------------------------------------------
+        if (!file) {
 
-imageInput.addEventListener("change", function () {
+            preview.style.display =
+                "none";
 
-    const file = imageInput.files[0];
+            analyzeButton.disabled =
+                true;
 
+            return;
+        }
 
-    if (!file) {
+        preview.src =
+            URL.createObjectURL(file);
 
-        selectedFile = null;
+        preview.style.display =
+            "block";
 
-        analyzeButton.disabled = true;
+        analyzeButton.disabled =
+            false;
 
-        preview.style.display = "none";
-
-        return;
+        resultBox.style.display =
+            "none";
     }
-
-
-    selectedFile = file;
-
-
-    // Show image preview
-
-    const imageURL =
-        URL.createObjectURL(file);
-
-    preview.src = imageURL;
-
-    preview.style.display = "block";
-
-
-    // Enable analyze button
-
-    analyzeButton.disabled = false;
-
-
-    // Hide old result
-
-    resultBox.style.display = "none";
-
-    emptyState.style.display = "block";
-
-});
+);
 
 
 // --------------------------------------------------
-// Analyze image
+// Analyze Image
 // --------------------------------------------------
 
 analyzeButton.addEventListener(
     "click",
     async function () {
 
+        const file =
+            imageInput.files[0];
 
-        if (!selectedFile) {
+        if (!file) {
 
-            alert("Please select an image first.");
+            alert(
+                "Please select an eye image first."
+            );
 
             return;
         }
 
-
-        // Change button state
-
-        analyzeButton.disabled = true;
+        analyzeButton.disabled =
+            true;
 
         analyzeButton.textContent =
             "Analyzing...";
 
 
-        // Create form data
-
-        const formData = new FormData();
+        const formData =
+            new FormData();
 
         formData.append(
             "image",
-            selectedFile
+            file
         );
 
 
         try {
-
-
-            // Send image to Render
 
             const response =
                 await fetch(
@@ -150,179 +119,180 @@ analyzeButton.addEventListener(
                 );
 
 
-            // Read response
-
             const data =
                 await response.json();
 
-
-            // Check backend error
 
             if (!response.ok) {
 
                 throw new Error(
                     data.error ||
-                    "Server error occurred."
+                    "Prediction failed."
                 );
             }
 
 
-            // --------------------------------------------------
-            // Display result
-            // --------------------------------------------------
-
+            // Main result
             resultText.textContent =
-                data.result || "Unknown";
+                data.result;
 
 
-            // --------------------------------------------------
-            // Display model confidence
-            // --------------------------------------------------
-
+            // Model score
             if (
-                data.model_score !== null &&
-                data.model_score !== undefined
+                data.model_score !==
+                undefined
             ) {
 
                 modelScore.textContent =
-                    data.model_score + "%";
+                    data.model_score.toFixed(2)
+                    + "%";
 
             } else {
 
                 modelScore.textContent =
-                    "Not available";
+                    "N/A";
             }
 
 
-            // --------------------------------------------------
-            // Risk factors
-            // --------------------------------------------------
-
-            riskFactors.innerHTML = "";
-
-
-            if (
-                Array.isArray(data.risk_factors) &&
-                data.risk_factors.length > 0
-            ) {
+            // Stage
+            stageText.textContent =
+                data.stage ||
+                "Not available";
 
 
-                data.risk_factors.forEach(
-                    function (factor) {
-
-                        const li =
-                            document.createElement("li");
-
-                        li.textContent = factor;
-
-                        riskFactors.appendChild(li);
-
-                    }
-                );
-
-
-            } else {
-
-                const li =
-                    document.createElement("li");
-
-                li.textContent =
-                    "No information available.";
-
-                riskFactors.appendChild(li);
-            }
-
-
-            // --------------------------------------------------
-            // About result
-            // --------------------------------------------------
-
+            // About
             aboutText.textContent =
                 data.about ||
                 "No additional information available.";
 
 
-            // --------------------------------------------------
-            // Next steps
-            // --------------------------------------------------
-
-            nextSteps.innerHTML = "";
+            // Risk factors
+            riskFactors.innerHTML =
+                "";
 
 
             if (
-                Array.isArray(data.next_steps) &&
-                data.next_steps.length > 0
+                Array.isArray(
+                    data.risk_factors
+                )
             ) {
 
+                data.risk_factors.forEach(
+                    function (factor) {
+
+                        const li =
+                            document.createElement(
+                                "li"
+                            );
+
+                        li.textContent =
+                            factor;
+
+                        riskFactors.appendChild(
+                            li
+                        );
+                    }
+                );
+            }
+
+
+            // Next steps
+            nextSteps.innerHTML =
+                "";
+
+
+            if (
+                Array.isArray(
+                    data.next_steps
+                )
+            ) {
 
                 data.next_steps.forEach(
                     function (step) {
 
                         const li =
-                            document.createElement("li");
+                            document.createElement(
+                                "li"
+                            );
 
-                        li.textContent = step;
+                        li.textContent =
+                            step;
 
-                        nextSteps.appendChild(li);
-
+                        nextSteps.appendChild(
+                            li
+                        );
                     }
                 );
-
-
-            } else {
-
-                const li =
-                    document.createElement("li");
-
-                li.textContent =
-                    "No information available.";
-
-                nextSteps.appendChild(li);
             }
 
 
-            // --------------------------------------------------
-            // Show report
-            // --------------------------------------------------
+            // Show result
+            resultBox.style.display =
+                "block";
 
-            emptyState.style.display =
-                "none";
+
+            // Scroll to result
+            resultBox.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+
+
+        } catch (error) {
+
+            console.error(error);
+
 
             resultBox.style.display =
                 "block";
 
 
-        }
+            resultText.textContent =
+                "Error";
 
-        catch (error) {
+
+            modelScore.textContent =
+                "N/A";
 
 
-            console.error(
-                "Analysis error:",
-                error
+            stageText.textContent =
+                "Unable to analyze";
+
+
+            aboutText.textContent =
+                "Something went wrong while connecting to the AI screening server.";
+
+
+            riskFactors.innerHTML =
+                "";
+
+
+            nextSteps.innerHTML =
+                "";
+
+
+            const li =
+                document.createElement(
+                    "li"
+                );
+
+            li.textContent =
+                error.message;
+
+
+            nextSteps.appendChild(
+                li
             );
 
 
-            alert(
-                "Unable to analyze the image.\n\n" +
-                error.message
-            );
-
-        }
-
-
-        finally {
-
-
-            // Restore button
+        } finally {
 
             analyzeButton.disabled =
                 false;
 
             analyzeButton.textContent =
                 "Analyze Image";
-
         }
-
     }
 );
+```
