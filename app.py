@@ -5,8 +5,6 @@ import numpy as np
 import pickle
 import os
 
-from skimage.feature import hog
-
 app = Flask(__name__)
 CORS(app)
 
@@ -20,165 +18,65 @@ if not os.path.exists(MODEL_FILE):
 with open(MODEL_FILE, "rb") as f:
     model = pickle.load(f)
 
-glaucoma_center = np.array(model["glaucoma_center"], dtype=np.float32)
-normal_center = np.array(model["normal_center"], dtype=np.float32)
+glaucoma_center = np.asarray(model["glaucoma_center"], dtype=np.float32)
+normal_center = np.asarray(model["normal_center"], dtype=np.float32)
 
 EXPECTED_FEATURE_SIZE = len(glaucoma_center)
 
+# The saved college-project model contains an image_size of (64, 64)
+# and 4096 features (64 x 64). It was trained using flattened,
+# normalized grayscale images, not HOG features.
+saved_size = model.get("image_size", (64, 64))
 
-def hog_feature_size(side):
-    cells = side // 8
-    if cells < 2:
-        return 0
-    return (cells - 1) * (cells - 1) * 9 * 4
+try:
+    saved_size = tuple(saved_size)
+except Exception:
+    saved_size = (64, 64)
 
+if len(saved_size) != 2 or saved_size[0] != saved_size[1]:
+    saved_size = (64, 64)
 
-def find_compatible_image_size():
-    saved_size = model.get("image_size")
+image_size = (int(saved_size[0]), int(saved_size[1]))
 
-    if saved_size:
-        try:
-            saved_size = tuple(saved_size)
-            if (
-                len(saved_size) == 2
-                and saved_size[0] == saved_size[1]
-                and hog_feature_size(saved_size[0]) == EXPECTED_FEATURE_SIZE
-            ):
-                return saved_size
-        except Exception:
-            pass
-
-    # Find the image size that produces exactly the number of
-    # HOG features stored in the model.
-    for side in range(32, 513, 8):
-        if hog_feature_size(side) == EXPECTED_FEATURE_SIZE:
-            return (side, side)
-
+if image_size[0] * image_size[1] != EXPECTED_FEATURE_SIZE:
     raise ValueError(
-        f"Feature size mismatch. Model expects {EXPECTED_FEATURE_SIZE} HOG features, "
-        "but no compatible square image size from 32 to 512 was found."
+        f"Model feature size mismatch. The saved model expects "
+        f"{EXPECTED_FEATURE_SIZE} features, but image_size {image_size} "
+        f"produces {image_size[0] * image_size[1]} features."
     )
-
-
-image_size = find_compatible_image_size()
 
 print("Model loaded successfully.")
-print("Model type:", model.get("model_type", "Unknown"))
-print("Using compatible image size:", image_size)
-print("Expected feature size:", EXPECTED_FEATURE_SIZE)
-
-
-def extract_skimage_features(image):
-    image = cv2.resize(image, image_size)
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-
-    features = hog(
-        gray,
-        orientations=9,
-        pixels_per_cell=(8, 8),
-        cells_per_block=(2, 2),
-        block_norm="L2-Hys"
-    )
-
-    return np.asarray(features, dtype=np.float32)
-
-
-def extract_custom_features(image):
-    image = cv2.resize(image, image_size)
-
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    gray = cv2.equalizeHist(gray)
-    gray = gray.astype(np.float32) / 255.0
-
-    gx = cv2.Sobel(gray, cv2.CV_32F, 1, 0, ksize=3)
-    gy = cv2.Sobel(gray, cv2.CV_32F, 0, 1, ksize=3)
-
-    magnitude = cv2.magnitude(gx, gy)
-    angle = cv2.phase(gx, gy, angleInDegrees=True)
-
-    cell_size = 8
-    block_size = 2
-    bins = 9
-
-    cells_y = image.shape[0] // cell_size
-    cells_x = image.shape[1] // cell_size
-
-    histogram = np.zeros(
-        (cells_y, cells_x, bins),
-        dtype=np.float32
-    )
-
-    bin_width = 180.0 / bins
-
-    for cy in range(cells_y):
-        for cx in range(cells_x):
-            y1 = cy * cell_size
-            y2 = y1 + cell_size
-            x1 = cx * cell_size
-            x2 = x1 + cell_size
-
-            cell_magnitude = magnitude[y1:y2, x1:x2]
-            cell_angle = angle[y1:y2, x1:x2] % 180
-
-            bin_index = (cell_angle / bin_width).astype(np.int32)
-            bin_index = np.clip(bin_index, 0, bins - 1)
-
-            for b in range(bins):
-                histogram[cy, cx, b] = np.sum(
-                    cell_magnitude[bin_index == b]
-                )
-
-    features = []
-
-    for y in range(cells_y - block_size + 1):
-        for x in range(cells_x - block_size + 1):
-            block = histogram[
-                y:y + block_size,
-                x:x + block_size
-            ].flatten()
-
-            norm = np.sqrt(np.sum(block ** 2) + 1e-6)
-            block = block / norm
-            features.extend(block)
-
-    return np.asarray(features, dtype=np.float32)
+print("Model feature size:", EXPECTED_FEATURE_SIZE)
+print("Using image size:", image_size)
+print("Feature extractor: 64x64 normalized grayscale pixels")
 
 
 def extract_features(image):
-    candidates = []
+    """
+    Reproduce the feature format used by the saved model:
+    1. Resize to the model's saved image size.
+    2. Convert to grayscale.
+    3. Normalize pixel values to 0..1.
+    4. Flatten to a 1-D vector.
+    """
+    resized = cv2.resize(image, image_size)
 
-    try:
-        candidates.append(("scikit-image HOG", extract_skimage_features(image)))
-    except Exception as e:
-        print("scikit-image HOG failed:", str(e))
+    gray = cv2.cvtColor(resized, cv2.COLOR_BGR2GRAY)
 
-    try:
-        candidates.append(("custom HOG", extract_custom_features(image)))
-    except Exception as e:
-        print("custom HOG failed:", str(e))
+    features = gray.astype(np.float32) / 255.0
+    features = features.flatten()
 
-    for name, features in candidates:
-        print(name, "feature size:", len(features))
+    if len(features) != EXPECTED_FEATURE_SIZE:
+        raise ValueError(
+            f"Feature size mismatch. Model expects {EXPECTED_FEATURE_SIZE}, "
+            f"but extractor produced {len(features)}."
+        )
 
-        if len(features) == EXPECTED_FEATURE_SIZE:
-            print("Using feature extractor:", name)
-            return features, name
-
-    sizes = [len(features) for _, features in candidates]
-
-    raise ValueError(
-        f"Feature size mismatch. Model expects {EXPECTED_FEATURE_SIZE}, "
-        f"available extractors produced {sizes}."
-    )
+    return features
 
 
 def predict_image(features):
     features = np.asarray(features, dtype=np.float32)
-
-    norm = np.linalg.norm(features)
-
-    if norm > 0:
-        features = features / norm
 
     glaucoma_distance = np.linalg.norm(
         features - glaucoma_center
@@ -193,7 +91,7 @@ def predict_image(features):
     if total_distance > 0:
         glaucoma_score = (
             normal_distance / total_distance
-        ) * 100
+        ) * 100.0
     else:
         glaucoma_score = 50.0
 
@@ -241,14 +139,9 @@ def predict():
                 "error": "Unable to read the uploaded image."
             }), 400
 
-        features, extractor_name = extract_features(image)
+        features = extract_features(image)
 
         result, score = predict_image(features)
-
-        stage = (
-            "Stage estimation unavailable. "
-            "This model was trained only for glaucoma/normal classification."
-        )
 
         risk_factors = [
             "Increasing age can increase glaucoma risk.",
@@ -277,22 +170,17 @@ def predict():
         return jsonify({
             "result": result,
 
-            # This is intentionally called a screening percentage/model score,
-            # not a medical probability.
+            # This is a model-derived screening score, not a medical probability.
             "screening_percentage": score,
             "model_score": score,
 
-            "stage": stage,
             "risk_factors": risk_factors,
             "about": about,
             "next_steps": next_steps,
 
             "model_information": {
-                "model_type": model.get(
-                    "model_type",
-                    "HOG Nearest-Centroid Classifier"
-                ),
-                "feature_extractor": extractor_name,
+                "model_type": "Nearest-Centroid Classifier",
+                "feature_extractor": "64x64 normalized grayscale pixels",
                 "feature_size": EXPECTED_FEATURE_SIZE,
                 "image_size": list(image_size),
                 "training_images": 70,
@@ -303,8 +191,7 @@ def predict():
             "disclaimer": (
                 "This system is a college project prototype and is not "
                 "a medical diagnostic tool. The screening percentage is "
-                "a model score, not a medical probability, glaucoma stage, "
-                "or diagnosis."
+                "a model score, not a medical probability or diagnosis."
             )
         })
 
