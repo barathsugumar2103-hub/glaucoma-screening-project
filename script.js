@@ -6,7 +6,7 @@ const analyzeButton = document.getElementById("analyzeButton");
 const resultBox = document.getElementById("resultBox");
 const resultText = document.getElementById("resultText");
 const screeningPercentage = document.getElementById("screeningPercentage");
-const stageText = document.getElementById("stageText");
+const testAccuracy = document.getElementById("testAccuracy");
 const riskFactors = document.getElementById("riskFactors");
 const aboutText = document.getElementById("aboutText");
 const nextSteps = document.getElementById("nextSteps");
@@ -54,7 +54,7 @@ analyzeButton.addEventListener("click", async () => {
     screeningPercentage.textContent = typeof percentage === "number"
       ? `${percentage.toFixed(2)}%`
       : "N/A";
-    stageText.textContent = data.stage || "Not available";
+    testAccuracy.textContent = data.model_information && typeof data.model_information.test_accuracy === "number"\n      ? `${data.model_information.test_accuracy.toFixed(1)}%`\n      : "N/A";
     aboutText.textContent = data.about || "No additional information available.";
 
     riskFactors.replaceChildren();
@@ -78,7 +78,7 @@ analyzeButton.addEventListener("click", async () => {
     resultBox.style.display = "block";
     resultText.textContent = "Could not analyze image";
     screeningPercentage.textContent = "N/A";
-    stageText.textContent = "Unavailable";
+    testAccuracy.textContent = "N/A";
     aboutText.textContent = "The request did not complete.";
     riskFactors.replaceChildren();
     nextSteps.replaceChildren();
