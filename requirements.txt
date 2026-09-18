@@ -3,3 +3,4 @@ flask-cors
 numpy
 opencv-python-headless
 gunicorn
+scikit-image
