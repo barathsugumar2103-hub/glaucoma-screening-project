@@ -61,8 +61,7 @@
             border-radius: 20px;
             padding: 25px;
             margin-bottom: 25px;
-            box-shadow:
-                0 15px 40px rgba(0, 0, 0, 0.35);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.35);
         }
 
         .upload-area {
@@ -96,80 +95,27 @@
             cursor: pointer;
         }
 
-        button:hover {
-            background: #50dfff;
-        }
-
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        #resultBox {
-            display: none;
-        }
-
-        .result-title {
-            color: #8ddfff;
-            margin-bottom: 15px;
-        }
-
-        #resultText {
-            font-size: 30px;
-            font-weight: bold;
-            margin-bottom: 25px;
-        }
+        button:hover { background: #50dfff; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        #resultBox { display: none; }
+        .result-title { color: #8ddfff; margin-bottom: 15px; }
+        #resultText { font-size: 30px; font-weight: bold; margin-bottom: 25px; }
 
         .info-grid {
             display: grid;
-            grid-template-columns:
-                repeat(
-                    auto-fit,
-                    minmax(220px, 1fr)
-                );
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 15px;
             margin-bottom: 25px;
         }
 
-        .info-card {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 14px;
-            padding: 18px;
-        }
-
-        .info-card h3 {
-            color: #7ddfff;
-            margin-bottom: 10px;
-        }
-
-        .score {
-            font-size: 28px;
-            font-weight: bold;
-        }
-
-        .section {
-            margin-top: 25px;
-        }
-
-        .section h2 {
-            color: #7ddfff;
-            margin-bottom: 12px;
-        }
-
-        .section p {
-            line-height: 1.6;
-            color: #d7e8f0;
-        }
-
-        ul {
-            padding-left: 22px;
-        }
-
-        li {
-            margin-bottom: 9px;
-            line-height: 1.5;
-            color: #d7e8f0;
-        }
+        .info-card { background: rgba(255, 255, 255, 0.05); border-radius: 14px; padding: 18px; }
+        .info-card h3 { color: #7ddfff; margin-bottom: 10px; }
+        .score { font-size: 28px; font-weight: bold; }
+        .section { margin-top: 25px; }
+        .section h2 { color: #7ddfff; margin-bottom: 12px; }
+        .section p { line-height: 1.6; color: #d7e8f0; }
+        ul { padding-left: 22px; }
+        li { margin-bottom: 9px; line-height: 1.5; color: #d7e8f0; }
 
         .disclaimer {
             border-left: 4px solid #ffc857;
@@ -180,203 +126,65 @@
             line-height: 1.6;
         }
 
-        .footer {
-            text-align: center;
-            color: #7d98a8;
-            font-size: 13px;
-            margin-top: 25px;
+        .footer { text-align: center; color: #7d98a8; font-size: 13px; margin-top: 25px; }
+
+        @media (max-width: 600px) {
+            .header h1 { font-size: 29px; }
+            .card { padding: 18px; }
         }
 
     </style>
 
 </head>
 
-
 <body>
-
 <div class="container">
-
-
     <div class="header">
-
-        <h1>
-            Glaucoma Detection System
-        </h1>
-
-        <p>
-            AI-based retinal image screening prototype
-        </p>
-
+        <h1>Glaucoma Detection System</h1>
+        <p>AI-based retinal image screening prototype</p>
     </div>
-
-
-    <!-- Upload Card -->
 
     <div class="card upload-area">
-
-        <h2>
-            Upload Eye Image
-        </h2>
-
-        <p style="margin-top:10px;color:#b9cbd5;">
-            Select a retinal/fundus image
-            for experimental screening.
-        </p>
-
-
-        <input
-            type="file"
-            id="imageInput"
-            accept="image/*"
-        >
-
-
-        <img
-            id="preview"
-            alt="Selected eye image"
-        >
-
-
-        <button
-            id="analyzeButton"
-            disabled
-        >
-            Analyze Image
-        </button>
-
+        <h2>Upload Eye Image</h2>
+        <p style="margin-top:10px;color:#b9cbd5;">Select a retinal/fundus image for experimental screening.</p>
+        <input type="file" id="imageInput" accept="image/*">
+        <img id="preview" alt="Selected eye image">
+        <button id="analyzeButton" disabled>Analyze Image</button>
     </div>
 
-
-    <!-- Result Card -->
-
-    <div
-        class="card"
-        id="resultBox"
-    >
-
-        <h2 class="result-title">
-            Screening Result
-        </h2>
-
-
-        <div id="resultText">
-            --
-        </div>
-
-
+    <div class="card" id="resultBox">
+        <h2 class="result-title">Screening Result</h2>
+        <div id="resultText">--</div>
         <div class="info-grid">
-
-
             <div class="info-card">
-
-                <h3>
-                    Model Score
-                </h3>
-
-                <div
-                    class="score"
-                    id="modelScore"
-                >
-                    --
-                </div>
-
+                <h3>Model Score</h3>
+                <div class="score" id="modelScore">--</div>
             </div>
-
-
             <div class="info-card">
-
-                <h3>
-                    Stage
-                </h3>
-
-                <div id="stageText">
-                    --
-                </div>
-
+                <h3>Stage</h3>
+                <div id="stageText">--</div>
             </div>
-
-
         </div>
-
-
-        <!-- About -->
-
         <div class="section">
-
-            <h2>
-                About This Result
-            </h2>
-
-            <p id="aboutText">
-                --
-            </p>
-
+            <h2>About This Result</h2>
+            <p id="aboutText">--</p>
         </div>
-
-
-        <!-- Risk Factors -->
-
         <div class="section">
-
-            <h2>
-                Educational Risk Factors
-            </h2>
-
-            <ul id="riskFactors">
-            </ul>
-
+            <h2>Educational Risk Factors</h2>
+            <ul id="riskFactors"></ul>
         </div>
-
-
-        <!-- Next Steps -->
-
         <div class="section">
-
-            <h2>
-                Next Steps
-            </h2>
-
-            <ul id="nextSteps">
-            </ul>
-
+            <h2>Next Steps</h2>
+            <ul id="nextSteps"></ul>
         </div>
-
-
-        <!-- Disclaimer -->
-
         <div class="disclaimer">
-
-            <strong>
-                Important:
-            </strong>
-
-            <span>
-                This system is a college project
-                prototype and is not a medical
-                diagnostic tool. The percentage shown
-                is a model score, not a medical
-                probability or diagnosis.
-            </span>
-
+            <strong>Important:</strong>
+            <span>This system is a college project prototype and is not a medical diagnostic tool. The percentage shown is a model score, not a medical probability or diagnosis.</span>
         </div>
-
     </div>
 
-
-    <div class="footer">
-
-        Glaucoma Detection System —
-        College Project Prototype
-
-    </div>
-
-
+    <div class="footer">Glaucoma Detection System — College Project Prototype</div>
 </div>
-
-
 <script src="script.js"></script>
-
 </body>
-
 </html>
-```
