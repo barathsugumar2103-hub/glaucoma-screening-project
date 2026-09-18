@@ -1,190 +1,86 @@
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
-
-    <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>Glaucoma Detection System</title>
-
-    <style>
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            background:
-                radial-gradient(
-                    circle at top,
-                    #102a43,
-                    #06111f 60%,
-                    #02070d
-                );
-            color: white;
-            min-height: 100vh;
-            padding: 30px 15px;
-        }
-
-        .container {
-            max-width: 900px;
-            margin: auto;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 35px;
-        }
-
-        .header h1 {
-            font-size: 38px;
-            margin-bottom: 10px;
-        }
-
-        .header p {
-            color: #9edfff;
-            font-size: 16px;
-        }
-
-        .card {
-            background: rgba(12, 31, 50, 0.85);
-            border: 1px solid rgba(80, 210, 255, 0.25);
-            border-radius: 20px;
-            padding: 25px;
-            margin-bottom: 25px;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.35);
-        }
-
-        .upload-area {
-            text-align: center;
-        }
-
-        .upload-area input {
-            margin: 20px 0;
-            width: 100%;
-        }
-
-        #preview {
-            display: none;
-            width: 100%;
-            max-width: 450px;
-            max-height: 400px;
-            object-fit: contain;
-            margin: 20px auto;
-            border-radius: 15px;
-            border: 1px solid #39d5ff;
-        }
-
-        button {
-            background: #12bfe6;
-            color: #001018;
-            border: none;
-            padding: 14px 30px;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        button:hover { background: #50dfff; }
-        button:disabled { opacity: 0.5; cursor: not-allowed; }
-        #resultBox { display: none; }
-        .result-title { color: #8ddfff; margin-bottom: 15px; }
-        #resultText { font-size: 30px; font-weight: bold; margin-bottom: 25px; }
-
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .info-card { background: rgba(255, 255, 255, 0.05); border-radius: 14px; padding: 18px; }
-        .info-card h3 { color: #7ddfff; margin-bottom: 10px; }
-        .score { font-size: 28px; font-weight: bold; }
-        .section { margin-top: 25px; }
-        .section h2 { color: #7ddfff; margin-bottom: 12px; }
-        .section p { line-height: 1.6; color: #d7e8f0; }
-        ul { padding-left: 22px; }
-        li { margin-bottom: 9px; line-height: 1.5; color: #d7e8f0; }
-
-        .disclaimer {
-            border-left: 4px solid #ffc857;
-            background: rgba(255, 200, 87, 0.08);
-            padding: 15px;
-            margin-top: 25px;
-            color: #f4e3b2;
-            line-height: 1.6;
-        }
-
-        .footer { text-align: center; color: #7d98a8; font-size: 13px; margin-top: 25px; }
-
-        @media (max-width: 600px) {
-            .header h1 { font-size: 29px; }
-            .card { padding: 18px; }
-        }
-
-    </style>
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#06152f">
+  <title>Glaucoma Detection System</title>
+  <style>
+    :root{--bg:#04132c;--panel:#0a2044;--panel2:#0d2853;--line:#174b87;--cyan:#27d4f2;--blue:#277cf5;--text:#f2f7ff;--muted:#a8bedf;--purple:#9878ff;--green:#2ce0b2}
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;background:radial-gradient(ellipse at 75% 8%,#12376b 0,transparent 35%),radial-gradient(ellipse at 0% 45%,#092b50 0,transparent 30%),var(--bg);color:var(--text);min-height:100vh}
+    a{color:inherit;text-decoration:none}.wrap{width:min(1280px,calc(100% - 40px));margin:auto}
+    header{border-bottom:1px solid #1b477a;background:rgba(4,19,44,.82);backdrop-filter:blur(16px);position:sticky;top:0;z-index:5}
+    .nav{height:78px;display:flex;align-items:center;justify-content:space-between;gap:20px}.brand{display:flex;align-items:center;gap:14px;font-weight:800;font-size:clamp(17px,2vw,25px);letter-spacing:-.5px}.logo{width:48px;height:38px;display:grid;place-items:center;color:var(--cyan);font-size:38px;line-height:1;text-shadow:0 0 22px #21bde8}.brand span{background:linear-gradient(90deg,#fff,#43d9f5);-webkit-background-clip:text;background-clip:text;color:transparent}.navlinks{display:flex;align-items:center;gap:clamp(16px,3vw,42px);color:#d1e0f8;font-size:14px}.status{border:1px solid #1b5b76;background:#07384b;border-radius:30px;padding:9px 14px;color:#c5f9ef;font-size:13px;white-space:nowrap}.dot{display:inline-block;width:8px;height:8px;background:var(--green);border-radius:50%;margin-right:8px;box-shadow:0 0 12px var(--green)}
+    .hero{display:grid;grid-template-columns:1.15fr .85fr;align-items:center;gap:36px;padding:64px 0 54px;min-height:330px}.eyebrow{color:var(--cyan);text-transform:uppercase;letter-spacing:2.4px;font-weight:750;font-size:12px;margin-bottom:17px}.hero h1{font-size:clamp(38px,5vw,66px);line-height:1.05;letter-spacing:-2.5px;margin-bottom:20px}.gradient{background:linear-gradient(90deg,#23d5f1,#4792ff 75%);-webkit-background-clip:text;background-clip:text;color:transparent}.hero p{font-size:clamp(16px,1.7vw,20px);line-height:1.65;color:#bfd1ed;max-width:680px}.hero-note{margin-top:16px!important;font-size:14px!important;color:#8faed5!important}.visual{position:relative;min-height:250px;display:grid;place-items:center}.orbit{width:245px;height:245px;border-radius:50%;border:1px solid #1676bf;box-shadow:0 0 0 13px #0b2b55,0 0 0 14px #16518c,0 0 55px #0e8bd866;display:grid;place-items:center;position:relative;background:radial-gradient(circle,#143c68,#061a38 68%)}.orbit:before,.orbit:after{content:"";position:absolute;border:1px dashed #1b8acb;border-radius:50%;inset:-27px;opacity:.7}.orbit:after{inset:-48px;border-style:solid;border-color:transparent #1762a2 transparent #1762a2;transform:rotate(30deg)}.eye{font-size:105px;filter:drop-shadow(0 0 22px #16b9ff);color:#42d9f2}.visual-label{position:absolute;right:0;bottom:12px;color:#a7c5ed;font-size:14px;line-height:1.6;font-style:italic}.visual-label strong{display:block;color:#41d7f2;font-size:18px}
+    .features{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding-bottom:34px}.feature{display:flex;align-items:center;gap:13px;color:#c6d8f2}.feature-icon{width:48px;height:48px;border:1px solid #1d5ca1;border-radius:15px;background:linear-gradient(145deg,#123f7a,#0a2350);display:grid;place-items:center;color:var(--cyan);font-size:23px;flex-shrink:0}.feature b{display:block;font-size:14px;margin-bottom:5px}.feature small{color:#91afd6;font-size:12px;line-height:1.4;display:block}
+    .workspace{border-top:1px solid #17477b;padding:30px 0 42px;display:grid;grid-template-columns:.92fr 1.18fr;gap:20px}.panel{border:1px solid #1a5594;background:linear-gradient(145deg,rgba(11,37,78,.96),rgba(5,25,56,.96));border-radius:18px;padding:22px;box-shadow:0 18px 55px #0002;min-width:0}.panel-heading{display:flex;align-items:center;gap:12px;margin-bottom:20px}.panel-icon{width:42px;height:42px;border-radius:13px;background:#103e78;color:var(--cyan);display:grid;place-items:center;font-size:21px}.panel-heading h2{font-size:20px}.panel-heading p{font-size:13px;color:var(--muted);margin-top:4px}
+    .dropzone{border:1px dashed #2899e9;border-radius:14px;background:linear-gradient(135deg,#0d2d60,#0a2047);padding:26px 16px;text-align:center;cursor:pointer;transition:.2s}.dropzone:hover,.dropzone:focus-within{border-color:var(--cyan);background:#103568}.upload-symbol{font-size:42px;color:#39cafa;margin-bottom:10px}.dropzone h3{font-size:18px;margin-bottom:7px}.dropzone p{color:#a9c2e6;font-size:13px;line-height:1.5}.dropzone input{display:block;width:100%;margin-top:18px;color:#b9cbe3;font-size:13px}.dropzone input::file-selector-button{border:0;border-radius:10px;background:linear-gradient(90deg,#2698f4,#1668ee);color:white;padding:12px 20px;font-weight:700;margin-right:12px;cursor:pointer}.file-preview{margin-top:17px;border:1px solid #1c4f89;border-radius:13px;padding:12px;display:flex;align-items:center;gap:14px;min-height:88px;background:#071b3a}.preview-frame{width:70px;height:62px;display:grid;place-items:center;border-radius:10px;background:#102b53;color:#70b9ef;font-size:27px;overflow:hidden;flex-shrink:0}.preview-frame img{width:100%;height:100%;object-fit:contain;display:none}.file-meta{min-width:0}.file-meta strong{display:block;font-size:13px;margin-bottom:5px;overflow-wrap:anywhere}.file-meta span{color:#92aed4;font-size:12px}.primary-btn{width:100%;border:0;border-radius:12px;padding:16px 20px;margin-top:17px;background:linear-gradient(100deg,#1aa9ec,#175ff2);color:white;font-size:16px;font-weight:750;cursor:pointer;box-shadow:0 8px 24px #126ce955;transition:transform .2s,filter .2s}.primary-btn:hover{filter:brightness(1.12);transform:translateY(-1px)}.primary-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}.helper{color:#819fc9;font-size:12px;text-align:center;margin-top:12px;line-height:1.5}
+    #resultBox{display:none}.result-title{font-size:20px;color:#eaf5ff;margin-bottom:18px}.result-banner{display:flex;align-items:center;gap:16px;padding:19px;border:1px solid #1b5794;background:linear-gradient(110deg,#0b2b5a,#0b2149);border-radius:14px;margin-bottom:16px}.result-symbol{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;background:#103f78;color:var(--cyan);font-size:28px;flex-shrink:0}.result-banner h3{font-size:17px;margin-bottom:7px}.result-banner p{font-size:13px;line-height:1.55;color:#a9c1e4}.info-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.info-card{border:1px solid #1b5794;border-radius:13px;padding:17px;background:#0a2853;min-width:0}.info-card h3{font-size:13px;color:#a9c4e9;font-weight:600;margin-bottom:13px}.score{font-size:27px;font-weight:800;color:#eaf6ff;overflow-wrap:anywhere}#stageText{font-size:17px;font-weight:700;color:#eaf6ff;line-height:1.4}.section{margin-top:20px}.section h2{font-size:15px;color:#56d5f0;margin-bottom:9px}.section p,.section li{font-size:13px;color:#b7cce9;line-height:1.65}.section ul{padding-left:19px}.section li{margin-bottom:5px}.disclaimer{margin-top:19px;padding:14px 15px;border:1px solid #755d2d;border-left:3px solid #f5c45e;border-radius:10px;background:#332b1b;color:#f2dfb4;font-size:12px;line-height:1.6}.footer{border-top:1px solid #17477b;background:#061a38;padding:25px 0;color:#93add2}.footer-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}.footer-item{display:flex;gap:12px;align-items:flex-start}.footer-item .feature-icon{width:40px;height:40px;border-radius:50%;font-size:18px}.footer-item b{display:block;color:#dceaff;font-size:13px;margin:4px 0 6px}.footer-item p{font-size:12px;line-height:1.5}.copyright{text-align:center;border-top:1px solid #173c68;margin-top:23px;padding-top:18px;font-size:12px;color:#718fb9}
+    @media(max-width:900px){.hero{grid-template-columns:1fr .65fr;gap:10px}.workspace{grid-template-columns:1fr}.features{grid-template-columns:repeat(2,1fr)}.footer-grid{grid-template-columns:repeat(2,1fr)}.visual-label{display:none}}
+    @media(max-width:600px){.wrap{width:min(100% - 24px,1280px)}.nav{height:auto;min-height:70px;flex-wrap:wrap;padding:12px 0}.logo{width:35px;font-size:30px}.navlinks{width:100%;justify-content:space-between;gap:10px;font-size:12px}.status{font-size:11px;padding:7px 10px}.hero{grid-template-columns:1fr;padding:42px 0 24px;min-height:auto}.hero h1{letter-spacing:-1.5px}.visual{min-height:200px}.orbit{width:160px;height:160px}.eye{font-size:70px}.features{gap:13px}.feature{align-items:flex-start}.feature-icon{width:40px;height:40px;font-size:18px}.feature small{font-size:11px}.workspace{padding-top:22px}.panel{padding:15px}.info-grid{grid-template-columns:1fr 1fr}.info-card{padding:13px}.footer-grid{gap:20px}.footer-item{gap:8px}.footer-item .feature-icon{width:34px;height:34px}.footer-item p{font-size:11px}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{transition:none!important}}
+  </style>
 </head>
-
 <body>
-<div class="container">
-    <div class="header">
-        <h1>Glaucoma Detection System</h1>
-        <p>AI-based retinal image screening prototype</p>
+<header><div class="wrap nav">
+  <a class="brand" href="#home" aria-label="Glaucoma Detection System home"><span class="logo" aria-hidden="true">◉</span><span>Glaucoma Detection System</span></a>
+  <nav class="navlinks" aria-label="Main navigation"><a href="#home">⌂ Home</a><a href="#about">About</a><a href="#how-it-works">How It Works</a><a href="#contact">Contact</a></nav>
+  <div class="status"><i class="dot"></i>API Online</div>
+</div></header>
+<main id="home" class="wrap">
+  <section class="hero">
+    <div><div class="eyebrow">AI-assisted retinal screening</div><h1>Glaucoma <span class="gradient">Detection System</span></h1><p>Explore retinal image screening with an AI-powered college project prototype.</p><p class="hero-note">Upload a fundus image to view the model's output and educational information.</p></div>
+    <div class="visual" aria-hidden="true"><div class="orbit"><div class="eye">◉</div></div><div class="visual-label">Screening starts with awareness<strong>Care for your vision</strong></div></div>
+  </section>
+  <section class="features" aria-label="Project features">
+    <div class="feature"><div class="feature-icon">✧</div><div><b>AI Analysis</b><small>Experimental image classification</small></div></div>
+    <div class="feature"><div class="feature-icon">ϟ</div><div><b>Quick Results</b><small>View the response after analysis</small></div></div>
+    <div class="feature"><div class="feature-icon">⬡</div><div><b>Non-invasive</b><small>Uses an uploaded retinal image</small></div></div>
+    <div class="feature"><div class="feature-icon">♡</div><div><b>Eye Health Awareness</b><small>Learn about follow-up care</small></div></div>
+  </section>
+  <section class="workspace" id="how-it-works">
+    <div class="panel">
+      <div class="panel-heading"><div class="panel-icon">⇧</div><div><h2>Upload Retinal Image</h2><p>Select an image for experimental screening</p></div></div>
+      <label class="dropzone" for="imageInput"><div class="upload-symbol">☁</div><h3>Choose an image to begin</h3><p>Click the button below and select a retinal/fundus image.<br>Supported image types: JPG, PNG, and other browser-supported formats.</p><input type="file" id="imageInput" accept="image/*" aria-label="Choose retinal image"></label>
+      <div class="file-preview"><div class="preview-frame"><span id="previewPlaceholder">▧</span><img id="preview" alt="Selected retinal image preview"></div><div class="file-meta"><strong id="fileName">No image selected</strong><span id="fileHint">Your selected image preview will appear here</span></div></div>
+      <button class="primary-btn" id="analyzeButton" disabled>⌕ &nbsp; Analyze Image</button>
+      <p class="helper">For educational demonstration only. Use a clear retinal/fundus image.</p>
     </div>
-
-    <div class="card upload-area">
-        <h2>Upload Eye Image</h2>
-        <p style="margin-top:10px;color:#b9cbd5;">Select a retinal/fundus image for experimental screening.</p>
-        <input type="file" id="imageInput" accept="image/*">
-        <img id="preview" alt="Selected eye image">
-        <button id="analyzeButton" disabled>Analyze Image</button>
+    <div class="panel" id="resultBox" aria-live="polite">
+      <div class="panel-heading"><div class="panel-icon">✧</div><div><h2>Analysis Result</h2><p>Details returned by the screening prototype</p></div></div>
+      <h2 class="result-title">Screening Summary</h2>
+      <div class="result-banner"><div class="result-symbol">◉</div><div><h3 id="resultText">Upload and analyze an image</h3><p id="aboutText">The system will display its output and any available educational information here.</p></div></div>
+      <div class="info-grid">
+        <div class="info-card"><h3>Model Score</h3><div class="score" id="modelScore">—</div></div>
+        <div class="info-card"><h3>Stage</h3><div id="stageText">—</div></div>
+      </div>
+      <div class="section"><h2>Educational Risk Factors</h2><ul id="riskFactors"><li>Information will appear when provided by the model.</li></ul></div>
+      <div class="section"><h2>Next Steps</h2><ul id="nextSteps"><li>Consult an eye-care professional for medical concerns.</li></ul></div>
+      <div class="disclaimer"><strong>Important:</strong> This is a college project prototype, not a medical diagnostic tool. A model score is not a medical probability, glaucoma stage, or diagnosis. Consult a qualified eye-care professional for screening and diagnosis.</div>
     </div>
-
-    <div class="card" id="resultBox">
-        <h2 class="result-title">Screening Result</h2>
-        <div id="resultText">--</div>
-        <div class="info-grid">
-            <div class="info-card">
-                <h3>Model Score</h3>
-                <div class="score" id="modelScore">--</div>
-            </div>
-            <div class="info-card">
-                <h3>Stage</h3>
-                <div id="stageText">--</div>
-            </div>
-        </div>
-        <div class="section">
-            <h2>About This Result</h2>
-            <p id="aboutText">--</p>
-        </div>
-        <div class="section">
-            <h2>Educational Risk Factors</h2>
-            <ul id="riskFactors"></ul>
-        </div>
-        <div class="section">
-            <h2>Next Steps</h2>
-            <ul id="nextSteps"></ul>
-        </div>
-        <div class="disclaimer">
-            <strong>Important:</strong>
-            <span>This system is a college project prototype and is not a medical diagnostic tool. The percentage shown is a model score, not a medical probability or diagnosis.</span>
-        </div>
-    </div>
-
-    <div class="footer">Glaucoma Detection System — College Project Prototype</div>
-</div>
+  </section>
+</main>
+<footer class="footer" id="about"><div class="wrap"><div class="footer-grid">
+  <div class="footer-item"><div class="feature-icon">◉</div><div><b>Early Awareness</b><p>Learn why regular eye examinations matter.</p></div></div>
+  <div class="footer-item"><div class="feature-icon">⬡</div><div><b>Privacy Mindset</b><p>Only upload images you have permission to use.</p></div></div>
+  <div class="footer-item"><div class="feature-icon">⊕</div><div><b>Student Prototype</b><p>Built to explore AI-assisted image classification.</p></div></div>
+  <div class="footer-item" id="contact"><div class="feature-icon">♡</div><div><b>Professional Care</b><p>Seek advice from an eye-care professional.</p></div></div>
+</div><div class="copyright">Glaucoma Detection System · College Project Prototype · Not for clinical use</div></div></footer>
 <script src="script.js"></script>
+<script>
+  const input = document.getElementById('imageInput');
+  const fileName = document.getElementById('fileName');
+  const fileHint = document.getElementById('fileHint');
+  const placeholder = document.getElementById('previewPlaceholder');
+  input.addEventListener('change', () => {
+    const file = input.files && input.files[0];
+    if (!file) { fileName.textContent = 'No image selected'; fileHint.textContent = 'Your selected image preview will appear here'; placeholder.style.display = 'block'; return; }
+    fileName.textContent = file.name;
+    fileHint.textContent = `${(file.size / 1024 / 1024).toFixed(2)} MB · Selected successfully`;
+    placeholder.style.display = 'none';
+  });
+</script>
 </body>
 </html>
