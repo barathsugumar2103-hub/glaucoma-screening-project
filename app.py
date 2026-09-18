@@ -1,24 +1,35 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import cv2
-import joblib
 import numpy as np
-from skimage.feature import hog
+import pickle
+import os
 
 app = Flask(__name__)
 CORS(app)
 
 # --------------------------------------------------
-# Load trained glaucoma model
+# Load the trained model
 # --------------------------------------------------
 
-MODEL_FILE = "glaucoma_model.pkl"
+MODEL_FILE = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)),
+    "glaucoma_model.pkl"
+)
 
-model = joblib.load(MODEL_FILE)
+try:
+    with open(MODEL_FILE, "rb") as file:
+        model = pickle.load(file)
+
+    print("Model loaded successfully.")
+
+except Exception as e:
+    print("Error loading model:", e)
+    model = None
 
 
 # --------------------------------------------------
-# Feature extraction
+# Extract image features
 # --------------------------------------------------
 
 def extract_features(image_bytes):
@@ -28,22 +39,19 @@ def extract_features(image_bytes):
     image = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
 
     if image is None:
-        return None
+        raise ValueError("Invalid image file.")
 
-    # Resize image
-    image = cv2.resize(image, (128, 128))
+    # Same image size used during training
+    image = cv2.resize(image, (64, 64))
 
     # Convert to grayscale
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-    # HOG feature extraction
-    features = hog(
-        gray,
-        orientations=9,
-        pixels_per_cell=(8, 8),
-        cells_per_block=(2, 2),
-        block_norm="L2-Hys"
-    )
+    # Normalize pixel values
+    gray = gray.astype(np.float32) / 255.0
+
+    # Convert image into a single feature vector
+    features = gray.flatten()
 
     return features
 
@@ -52,11 +60,12 @@ def extract_features(image_bytes):
 # Home route
 # --------------------------------------------------
 
-@app.route("/")
+@app.route("/", methods=["GET"])
 def home():
 
     return jsonify({
-        "message": "Glaucoma Screening API is running - V3"
+        "message": "Glaucoma Screening API is running",
+        "status": "online"
     })
 
 
@@ -67,11 +76,17 @@ def home():
 @app.route("/predict", methods=["POST"])
 def predict():
 
-    # Check image
+    if model is None:
+
+        return jsonify({
+            "error": "Model could not be loaded."
+        }), 500
+
+    # Check whether an image was uploaded
     if "image" not in request.files:
 
         return jsonify({
-            "error": "No image uploaded"
+            "error": "No image uploaded."
         }), 400
 
     file = request.files["image"]
@@ -79,122 +94,176 @@ def predict():
     if file.filename == "":
 
         return jsonify({
-            "error": "No image selected"
+            "error": "No image selected."
         }), 400
-
-    # Read image
-    image_bytes = file.read()
-
-    # Extract HOG features
-    features = extract_features(image_bytes)
-
-    if features is None:
-
-        return jsonify({
-            "error": "Invalid image"
-        }), 400
-
-    # --------------------------------------------------
-    # Glaucoma prediction
-    # --------------------------------------------------
-
-    prediction = model.predict([features])[0]
-
-    # --------------------------------------------------
-    # Model confidence / estimate
-    # --------------------------------------------------
-
-    model_score = None
 
     try:
 
-        probabilities = model.predict_proba([features])[0]
+        # Read image
+        image_bytes = file.read()
 
-        if len(probabilities) > 1:
+        # Extract features
+        features = extract_features(image_bytes)
 
-            # Probability associated with glaucoma class
-            model_score = round(
-                float(probabilities[1]) * 100,
-                2
+        # Get trained class centers
+        glaucoma_center = np.array(
+            model["glaucoma_center"],
+            dtype=np.float32
+        )
+
+        normal_center = np.array(
+            model["normal_center"],
+            dtype=np.float32
+        )
+
+        # Calculate distance from each class
+        glaucoma_distance = np.linalg.norm(
+            features - glaucoma_center
+        )
+
+        normal_distance = np.linalg.norm(
+            features - normal_center
+        )
+
+        # Avoid division by zero
+        total_distance = (
+            normal_distance + glaucoma_distance
+        )
+
+        if total_distance == 0:
+
+            glaucoma_score = 50.0
+
+        else:
+
+            glaucoma_score = (
+                normal_distance / total_distance
+            ) * 100
+
+        glaucoma_score = round(
+            float(glaucoma_score), 2
+        )
+
+        # --------------------------------------------------
+        # Classification
+        # --------------------------------------------------
+
+        if glaucoma_distance < normal_distance:
+
+            result = "Possible Glaucoma"
+
+            about = (
+                "The model detected image patterns "
+                "that were more similar to the glaucoma "
+                "examples in its training data."
             )
 
-    except Exception as error:
+        else:
 
-        print("Confidence calculation error:", error)
+            result = "Likely Normal"
 
+            about = (
+                "The model detected image patterns "
+                "that were more similar to the normal "
+                "examples in its training data."
+            )
 
-    # --------------------------------------------------
-    # Result information
-    # --------------------------------------------------
+        # --------------------------------------------------
+        # Stage information
+        # --------------------------------------------------
 
-    if prediction == 1:
+        stage = (
+            "Stage estimation unavailable. "
+            "This model was trained only for "
+            "glaucoma/normal classification."
+        )
 
-        result = "Possible Glaucoma"
+        # --------------------------------------------------
+        # Educational risk factors
+        # --------------------------------------------------
 
         risk_factors = [
-            "Family history may be associated with increased glaucoma risk.",
-            "High eye pressure is an important clinical risk factor.",
-            "Increasing age can be associated with glaucoma risk.",
-            "Some medical conditions may be associated with increased risk."
+
+            "Age and family history can affect glaucoma risk.",
+
+            "Eye pressure is an important factor.",
+
+            "Regular eye examinations can help detect "
+            "eye problems."
+
         ]
 
-        about = (
-            "The prototype AI model classified this image "
-            "as belonging to the glaucoma class."
-        )
+        # --------------------------------------------------
+        # Next steps
+        # --------------------------------------------------
 
         next_steps = [
-            "Consider having a professional eye examination.",
-            "An eye specialist can perform appropriate glaucoma tests.",
-            "Do not use this prototype result as a medical diagnosis."
-        )
 
-    else:
+            "This result does not rule out glaucoma.",
 
-        result = "Likely Normal"
+            "Continue regular eye examinations when recommended.",
 
-        risk_factors = [
-            "A normal prototype result does not rule out glaucoma.",
-            "Regular eye examinations can help detect eye problems early."
+            "Seek professional evaluation if you have "
+            "eye-related concerns."
+
         ]
 
-        about = (
-            "The prototype AI model classified this image "
-            "as belonging to the normal class."
-        )
+        # --------------------------------------------------
+        # Model information
+        # --------------------------------------------------
 
-        next_steps = [
-            "Continue routine eye examinations.",
-            "Seek professional evaluation if you have eye-related concerns.",
-            "Do not use this prototype result as a medical diagnosis."
-        ]
+        model_information = {
 
+            "model_type": "Nearest-Centroid Image Classifier",
 
-    # --------------------------------------------------
-    # Final response
-    # --------------------------------------------------
+            "test_accuracy": 58.82,
 
-    return jsonify({
+            "test_images": 17,
 
-        "result": result,
+            "training_images": 70
 
-        "model_score": model_score,
+        }
 
-        "risk_factors": risk_factors,
+        # --------------------------------------------------
+        # Final response
+        # --------------------------------------------------
 
-        "about": about,
+        return jsonify({
 
-        "next_steps": next_steps,
+            "result": result,
 
-        "disclaimer": (
-            "This is an educational AI prototype and "
-            "not a medical diagnostic system."
-        )
-    })
+            "model_score": glaucoma_score,
+
+            "stage": stage,
+
+            "risk_factors": risk_factors,
+
+            "about": about,
+
+            "next_steps": next_steps,
+
+            "model_information": model_information,
+
+            "disclaimer": (
+                "This system is a college project prototype "
+                "and is not a medical diagnostic tool. "
+                "The percentage shown is a model score, "
+                "not a medical probability or diagnosis."
+            )
+
+        })
+
+    except Exception as e:
+
+        return jsonify({
+
+            "error": str(e)
+
+        }), 500
 
 
 # --------------------------------------------------
-# Run locally
+# Run the application
 # --------------------------------------------------
 
 if __name__ == "__main__":
